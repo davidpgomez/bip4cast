@@ -1,0 +1,74 @@
+<form action="/register/process?form=patientregister" method="post"> 
+    <fieldset class="form-group">
+        <label for="pac_id_form">Nombre completo</label><br>
+        <input type="text" class="form-control" placeholder="Nombre del paciente" name="pac_name" id="pac_id_form" required>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="gendersel">Sexo</label>
+        <select name="gender" class="form-control" id="gendersel">
+            <option value="F">Hombre</option>
+            <option value="T">Mujer</option>
+        </select>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="bday">Fecha nacimiento</label>
+        <input type="date" class="form-control" name="bday" id="bday" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" required>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input typ="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="conv">Convivencia</label>
+        <select name="conviviality" class="form-control" id="conv" required>
+            <option value="0">Solo</option>
+            <option value="1">Pareja</option>
+            <option value="2">Pareja e hijos</option>
+            <option value="3">Familia de origen</option>
+            <option value="4">Otros</option>
+        </select>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="diag">Diagnóstico</label>
+        <input type="text" class="form-control" name="diag" id="diag" pattern="^[A-Z]\d{2}(\.\d){0,1}$" title="El formato aceptado es A00 o A00.0" required>
+        <small class="text-muted">En formato <a href="https://eciemaps.mspsi.es/ecieMaps/browser/index_10_mc.html">CIE-10</a></small>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="onset">Edad inicio de síntomas</label>
+        <input type="number" class="form-control" name="ageOfOnset" id="onset" required>
+    </fieldset>
+    <fieldset class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox" name="litsens" value="T"> Sensible al litio
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" name="valsens" value="T"> Sensible al valproato
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" name="carsens" value="T"> Sensible a la carbamacepina
+        </label><br>
+        <label class="checkbox-inline">
+            <input type="checkbox" name="station" value="T"> Estacionalidad
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" name="psychs" value="T"> Síntomas psicóticos
+        </label>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="mancrisis">Media crisis maníacas (por año)</label>
+        <input type="number" class="form-control" id="mancrisis" name="mancrisis" min="0" value="0">
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="mixcrisis">Media crisis mixtas (por año)</label>
+        <input type="number" class="form-control" id="mixcrisis" name="mixcrisis" min="0" value="0">
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="freeper">Período libre (en meses)</label>
+        <input type="number" class="form-control" id="freeper" name="freeper" min="0" value="0">
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="others">Otros diagnósticos</label>
+        <textarea class="form-control" id="others" name="others"></textarea>
+    </fieldset>
+    <input id="button" type="submit" class="btn btn-primary" value="Finalizar">
+</form>

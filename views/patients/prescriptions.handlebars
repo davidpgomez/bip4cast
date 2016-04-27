@@ -1,0 +1,67 @@
+<script>
+$(document).ready(function () {
+    $('#editingPres').on('show.bs.modal', function (e) {
+        $('#patientId').val($(e.relatedTarget).data('id'));
+    });
+});
+</script>
+
+
+<!-- Editing  recipe -->
+<div id="editingPres" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Editar receta</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-warning"><small>Si no se confirman los cambios, estos se perderán</small></p>
+                <input type="text" name="patientId" id="patientId" value="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="/tracing/process?form=updateprescriptions&id={{pat_id}}" method="post"> 
+    <fieldset class="form-group">
+        <label for="begindate">Comienzo</label>
+        <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="enddate">Final</label>
+        <input type="date" class="form-control" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+    </fieldset>
+    <input type="submit" class="btn btn-primary" value="Actualizar">
+</form>
+<br>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thread>
+            <tr>
+                <th> Nombre </th>
+                <th> Inicio </th>
+                <th> Final </th>
+                <th> Hora </th>
+                <th> Dosis (mg)</th>
+                <th> Editar </th>
+            </tr>
+        </thread>
+        <tbody>
+            {{#each comm_list}}
+                <tr>
+                    <td> {{name}}</td>
+                    <td> {{dateStart}} </td>
+                    <td> {{dateEnd}} </td>
+                    <td> {{time}} </td>
+                    <td> {{dose}} </td>
+                    <td> <a href="#editingPres"class="btn btn-info" data-toggle="modal"> ||</a></td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

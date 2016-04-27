@@ -1,0 +1,13 @@
+<form action="/tracing/process?form=updaterecords&id={{pat_id}}" method="post"> 
+    <fieldset class="form-group">
+        <label for="begindate">Fecha</label>
+        <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+    </fieldset>
+    <input type="submit" class="btn btn-primary" value="Obtener informes">
+</form>
+
+<h2>Resultados de {{record.date}}</h2>
+EEAG: {{record.eeag}}<br>
+HDRS: {{record.hdrs.total}}<br>
+YMRS: {{record.ymrs.total}}<br>
+SAPS: {{record.saps.total}}<br>

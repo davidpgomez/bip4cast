@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Página principal de la aplicación">
+    <meta name="author" content="David Peñas">
+    <link rel="icon" href="favicon.ico">
+
+    <title>{{pagetitle}}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="/bootstrap/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/stylesheets/dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="/bootstrap/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  </head>
+
+  <body>
+
+     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <!-- El logotipo y el icono que despliega el menú se agrupan
+       para mostrarlos mejor en los dispositivos móviles -->
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Desplegar menú</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <span class="navbar-brand">Bipolares</span>
+        </div>
+  <!-- Agrupar los enlaces de navegación, los formularios y cualquier
+       otro elemento que se pueda ocultar al minimizar la barra -->
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li {{#if dashactive}}class="active"{{/if}}><a href="/index">Dashboard{{#if dashactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+            <li {{#if aleractive}}class="active"{{/if}}><a href="/alerts">Alertas{{#if aleractive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+            <li {{#if tracactive}}class="active"{{/if}}><a href="/tracing">Seguimiento{{#if tracactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+            <li {{#if regiactive}}class="active"{{/if}}><a href="/register">Nuevo paciente{{#if regiactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li {{#if settactive}}class="active"{{/if}}><a href="/settings">Ajustes</a></li>
+            <li {{#if helpactive}}class="active"{{/if}}><a href="/help">Ayuda</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Búsqueda">
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid">
+	   <div class="row">
+        {{#if patientview}}
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li {{#if mainactive}}class="active"{{/if}}><a href="/patient-info/{{pat_id}}/main">Principal {{#if mainactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+            <li {{#if presactive}}class="active"{{/if}}><a href="/patient-info/{{pat_id}}/prescriptions">Medicación {{#if presactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+            <li {{#if recoactive}}class="active"{{/if}}><a href="/patient-info/{{pat_id}}/records">Informes médicos {{#if recoactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+            <li {{#if commactive}}class="active"{{/if}}><a href="/patient-info/{{pat_id}}/communication">Comunicación{{#if commactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+          </ul>
+        </div>
+        {{/if}}
+	{{!-- Espacio de trabajo (cuerpo del dashboard) --}}
+           {{#if patientview}}
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <h1 class="page-header">{{pagetitle}}</h1>
+                    {{{body}}}
+                </div>
+           {{else}}
+           {{#if flash}}
+            <div class="alert alert-dismissible alert-{{flash.type}}">
+                <button type="button" class="close"
+data-dismiss="alert" aria-hidden="true">&times;<button>
+<strong>{{flash.intro}}</strong> {{{flash.message}}}
+           </div>
+           {{/if}}
+          <div class="col-sm-9 col-md-10 main">
+            <h1 class="page-header">{{pagetitle}}</h1>
+            {{{body}}}
+	       </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages  <load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <!-- <script src="/assets/js/vendor/holder.min.js"></script> -->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
