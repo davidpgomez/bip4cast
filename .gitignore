@@ -1,0 +1,21 @@
+# ignore packages installed by npm
+node_modules*
+bin*
+data*
+lib*
+
+# any other files you don't want to check,
+# such as .DS_Store (OSX), *.bak, etc.
+.DS_Store
+
+# crediantial
+credentials.js
+
+# don't commit log files
+log
+
+# ignore uploaded data
+data
+
+# don't store SSL certs in repo!
+ssl
