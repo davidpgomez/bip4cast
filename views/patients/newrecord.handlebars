@@ -1,15 +1,53 @@
 <h2>Nuevo informe</h2>
 <h3>{{date}}</h3>
-<div class="btn-group btn-group-centered" role="group">
-    <button type="button" class="btn btn-primary">EEAG</button>
-    <button type="button" class="btn btn-primary">HDRS</button>
-    <button type="button" class="btn btn-primary">YMRS</button>
-    <div class="btn-group" role="group">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PANSS <span class="caret"> </span></button>
-        <ul class="dropdown-menu">
-            <li><a href="#">Positiva</a></li>
-            <li><a href="#">Negativa</a></li>
-            <li><a href="#">General</a></li>
-        </ul>
-    </div>
+<div class="btn-group btn-group-justified" role="group">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" href="#eeag" data-toggle="tab" role="tab" aria-expanded="true">EEAG</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-expanded="false" href="#hdrs" role="tab" data-toggle="tab">HDRS</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-expanded="false" href="#ymrs" role="tab" data-toggle="tab">YMRS</a>
+        </li>
+        <li class="dropdown" role="presentation">
+            <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PANSS <span class="caret"> </span></a>
+            <ul class="dropdown-menu">
+                <li class="nav-item">
+                    <a class="nav-link" aria-expanded="false" href="#panss_pos" role="tab" data-toggle="tab">Positiva</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-expanded="false" href="#panss_neg" role="tab" data-toggle="tab">Negativa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-expanded="false" href="#panss_gen" role="tab" data-toggle="tab">General</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </div>
+<form method="post">
+    <div class="tab-content">
+        <div id="eeag" class="tab-pane" role="tabpanel" aria-expanded="false">
+            <h4>EEAG</h4>
+            <p>Introducir puntuación EEAG </p>
+            <input type="number" min="0" max="100">
+        </div>
+        <div id="hdrs" class="tab-pane" role="tabpanel" aria-expanded="false">
+            <h4>HDRS</h4>
+        </div>
+        <div id="ymrs" class="tab-pane" role="tabpanel" aria-expanded="false">
+            <h4>YMRS</h4>
+        </div>
+        <div id="panss_pos" class="tab-pane" role="tabpanel" aria-expanded="false">
+            <h4>PANSS escala positiva</h4>
+        </div>
+        <div id="panss_neg" class="tab-pane" role="tabpanel" aria-expanded="false">
+            <h4>PANSS escala negativa</h4>
+        </div>
+        <div id="panss_gen" class="tab-pane" role="tabpanel" aria-expanded="false">
+            <h4>PANSS escala general</h4>
+        </div>
+    </div>
+</form>

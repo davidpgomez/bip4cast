@@ -4,9 +4,13 @@ bin*
 data*
 lib*
 
+# bootstrap files
+public/bootstrap*
+
 # any other files you don't want to check,
 # such as .DS_Store (OSX), *.bak, etc.
 .DS_Store
+*~
 
 # crediantial
 credentials.js

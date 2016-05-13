@@ -1,16 +1,189 @@
-<p>Nombre completo: {{pat_list.name}}</p>
-<p>Fecha de nacimiento: {{pat_list.birthDate}}</p>
-<p>Sexo: {{pat_list.gender}}</p>
-<p>Correo electrónico: <a href="mailto:{{pat_list.email}}">{{pat_list.email}}</a></p>
-<p>Vive con: {{pat_list.conviviality}}</p>
-<p>Diagnóstico (CIE10): {{pat_list.diagnosis}}</p>
-<p>Edad de diagnóstico: {{pat_list.ageOfOnset}} años</p>
-<p>Sensible al litio: {{pat_list.sensitiveToLithium}}</p>
-<p>Sensible al valproato: {{pat_list.sensitiveToValproate}}</p>
-<p>Sensible a la carbamacepina: {{pat_list.sensitiveToCarbamazepine}}</p>
-<p>Estacionalidad: {{pat_list.seasonality}}</p>
-<p>Frecuencia de crisis maníacas: {{pat_list.freqManiacCrises}} crisis/año</p>
-<p>Frecuencia de crisis mixtas: {{pat_list.freqMixedCrises}} crisis/año</p>
-<p>Período libre: {{pat_list.freePeriod}} meses</p>
-<p>Síntomas psicóticos: {{pat_list.psychoticSymptoms}}</p>
-<p>Otros diagnósticos: {{pat_list.otherDiagnoses}}</p>
+{{#section 'jquery'}}
+    <script>
+         $('#editingPat').on('show.bs.modal', function (event) {
+            if({{raw.lisens}}){
+                $('input[name="litsens"]').prop('checked', true);
+            }
+            if({{raw.carbsens}}){
+                $('input[name="carsens"]').prop('checked', true);
+            }
+            if({{raw.valsens}}){
+                $('input[name="valsens"]').prop('checked', true);
+            }
+            if({{raw.season}}){
+                $('input[name="station"]').prop('checked', true);
+            }
+            if({{raw.psyc}}){
+                $('input[name="psychs"]').prop('checked', true);
+            }
+            if({{raw.gender}}){
+                // woman
+                $('select option[value="T"]').attr("selected",true);
+            }
+            else{
+                $('select option[value="F"]').attr("selected",true);
+            }
+         });
+    </script>
+{{/section}}
+
+<div id="editingPat" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Editar paciente</h4>
+            </div>
+            <form name="edit" class="form-horizontal" role="form"  method="post" id="editPatFrom" action="/tracing/process/form?=editpat?={{pat_id}}">
+                <div class="modal-body">
+                    <fieldset class="form-group">
+                        <label for="name" class="col-sm-3 control-label">Nombre completo</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="name" class="col-sm-9 form-control" required value="{{pat.name}}">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="birthdate" class="col-sm-3 control-label">Fecha de nacimiento</label>
+                        <div class="col-sm-6">
+                            <input type="date" name="bithdate" class="form-control" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" value="{{raw.bday}}">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group" >
+                        <label for="gender" class="col-sm-3 control-label">Sexo</label>
+                        <div class="col-sm-6">
+                            <select name="gender" class="form-control" id="gender">
+                                <option value="F">Hombre</option>
+                                <option value="T">Mujer</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="email" class="col-sm-3 control-label">Correo electrónico</label>
+                        <div class="col-sm-6">
+                            <input type="email" class="form-control" id="email" name="email" value={{pat.email}}>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="conv" class="col-sm-3 control-label">Vive con</label>
+                            <div class="col-sm-6">
+                                <select name="conviviality" class="form-control" id="conv" required>
+                                    <option value="0">Solo</option>
+                                    <option value="1">Pareja</option>
+                                    <option value="2">Pareja e hijos</option>
+                                    <option value="3">Familia de origen</option>
+                                    <option value="4">Otros</option>
+                                </select>
+                            </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="diag" class="col-sm-3 control-label">Diagnóstico</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="diag" id="diag" pattern="^[A-Z]\d{2}(\.\d){0,1}$" title="El formato aceptado es A00 o A00.0" required value="{{pat.diagnosis}}">
+                            <small class="text-muted">En formato <a href="https://eciemaps.mspsi.es/ecieMaps/browser/index_10_mc.html">CIE-10</a></small>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="onset" class="col-sm-3 control-label">Edad inicio de síntomas</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" name="ageOfOnset" id="onset" required value="{{pat.diagnosisAge}}">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label class="col-sm-3 control-label">Alergias y sensibilidades</label>
+                        <div class="col-sm-6">
+                            <label>
+                                <input type="checkbox" name="litsens" value="T"> Sensible al litio
+                            </label>
+                            <label>
+                                <input type="checkbox" name="valsens" value="T"> Sensible al valproato
+                            </label>
+                            <label>
+                                <input type="checkbox" name="carsens" value="T"> Sensible a la carbamacepina
+                            </label><br>
+                            <label>
+                                <input type="checkbox" name="station" value="T"> Estacionalidad
+                            </label>
+                            <label>
+                                <input type="checkbox" name="psychs" value="T"> Síntomas psicóticos
+                            </label>
+                        </div>
+                    </fieldset>
+                     <fieldset class="form-group">
+                        <label for="mancrisis" class="col-sm-3 control-label">Media crisis maníacas (por año)</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="mancrisis" name="mancrisis" min="0" value="{{pat.maniaCrises}}">
+                         </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="mixcrisis" class="col-sm-3 control-label">Media crisis mixtas (por año)</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="mixcrisis" name="mixcrisis" min="0" value="{{pat.mixedCrises}}">
+                         </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="freeper" class="col-sm-3 control-label">Período libre (en meses)</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="freeper" name="freeper" min="0" value="{{pat.freePeriod}}">
+                         </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="others" class="col-sm-3 control-label">Otros diagnósticos</label>
+                        <div class="col-sm-6">
+                            <textarea class="form-control" id="others" name="others">{{pat.others}}</textarea>
+                         </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <p class="text-warning"><small>Si no se confirman los cambios, estos se perderán</small></p>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="deletingPat" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Eliminar paciente</h4>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que quiere eliminar a este paciente? <br>
+                Se eliminarán TODOS los datos que se conservan de este paciente, incluyendo recetas, resultados de test y mensajes.
+            </div>
+            <div class="modal-footer">
+                <p class="text-danger"><small>Este cambio no podrá deshacerse</small></p>
+                <form method="post">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <a href="/register/unregister/{{pat_id}}" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Eliminar</a>
+                </form>
+            </div>
+        </div>
+    </div>    
+</div>
+
+<div class="col-sm-6 col-md-8">
+    <p>Nombre completo: {{pat.name}}</p>
+    <p>Fecha de nacimiento: {{pat.birthDate}}</p>
+    <p>Sexo: {{pat.gender}}</p>
+    <p>Correo electrónico: <a href="mailto:{{pat.email}}">{{pat.email}}</a></p>
+    <p>Vive con: {{pat.cohabitation}}</p>
+    <p>Diagnóstico (CIE10): {{pat.diagnosis}}</p>
+    <p>Edad de diagnóstico: {{pat.diagnosisAge}} años</p>
+    <p>Sensible al litio: {{pat.senLit}}</p>
+    <p>Sensible al valproato: {{pat.senVal}}</p>
+    <p>Sensible a la carbamacepina: {{pat.senCar}}</p>
+    <p>Estacionalidad: {{pat.seasonality}}</p>
+    <p>Frecuencia de crisis maníacas: {{pat.maniaCrises}} crisis/año</p>
+    <p>Frecuencia de crisis mixtas: {{pat.mixedCrises}} crisis/año</p>
+    <p>Período libre: {{pat.freePeriod}} meses</p>
+    <p>Síntomas psicóticos: {{pat.senCar}}</p>
+    <p>Otros diagnósticos: {{pat.others}}</p>
+</div>
+<div class="col-sm-3 col-md-2">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editingPat"> Editar paciente </button>
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletingPat"><span class="glyphicon glyphicon-trash"></span> Eliminar paciente</button>
+</div>

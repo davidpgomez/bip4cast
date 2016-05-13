@@ -8,6 +8,8 @@ var session = require('client-sessions');
 
 // add handlebars annd create a default layout
 var exphbs = require('express-handlebars');
+// add tools
+var tools = require('./lib/tools.js');
 
 var app = express(); 
 
@@ -16,7 +18,16 @@ app.set('views', __dirname + '/views');
 app.set('port', process.env.port || 5000);
 
 // view engine setup
-app.engine('handlebars', exphbs({ defaultLayout : 'main'}));
+app.engine('handlebars', exphbs({ 
+    defaultLayout : 'main',
+    helpers: {
+        section: function(name, options){
+            if(!this._sections) this._sections = {};
+            this._sections[name] = options.fn(this);
+            return null;
+        }
+    }
+}));
 app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public
@@ -28,6 +39,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(cookieParser());
 
 // static content declaration
+app.use('/js', express.static(__dirname + '/public/bootstrap/dist/js')); // redirect JS bootstrap
+app.use('/js', express.static(__dirname + '/public/bootstrap/assets/js')); // redirect JS jQuery
+app.use('/js', express.static(__dirname + '/public/javascripts'));
+app.use('/css', express.static(__dirname + '/public/bootstrap/dist/css')); // redirect CSS bootstrap
+app.use('/css', express.static(__dirname + '/public/bootstrap/assets/css')); // redirect CSS bootstrap
+app.use('/fonts', express.static(__dirname +  '/public/bootstrap/dist/fonts')); // redirect fonts bootstrap
 app.use(express.static(__dirname + '/public'));
 
 // sessions handler
@@ -56,233 +73,6 @@ var phenotype = require('./models/phenotype.js');
 var comments = require('./models/comments.js');
 var records = require('./models/records.js');
 
-phenotype.find(function(err, data){
-    // if there are any data, we skip adding new data to db
-    if(data.length) return;
-
-    // else, we add data to db
-    new phenotype({
-        name : 'Pepito Pérez',
-        birthDate : new Date('1993-08-27T09:00:00.000Z'),
-        gender : 'M',
-        email : 'pepito@mail.com',
-        pin : 123456,
-        conviviality : 0,
-        diagnosis : 'E45.2',
-        ageOfOnset : 15,
-        sensitiveToLithium : false,
-        sensitiveToValproate : false,
-        sensitiveToCarbamazepine : false,
-        seasonality : false,
-        freqManiacCrises : 2,
-        freqMixedCrises : 0,
-        freePeriod : 10,
-        psychoticSymptoms : 'No',
-        otherDiagnoses : 'None'
-    }).save();
-
-    new phenotype({
-        name : 'Juanita Jiménez',
-        birthDate : new Date('1987-10-14T18:42:30.000Z'),
-        gender : 'F',
-        email : 'juanita@mail.com',
-        pin : 456789,
-        conviviality : 1,
-        diagnosis : 'Z05.6',
-        ageOfOnset : 15,
-        sensitiveToLithium : false,
-        sensitiveToValproate : true,
-        sensitiveToCarbamazepine : false,
-        seasonality : false,
-        freqManiacCrises : 3,
-        freqMixedCrises : 2,
-        freePeriod : 6,
-        psychoticSymptoms : 'Yes',
-        otherDiagnoses : 'Allergic to peniciline'
-    }).save();
-});
-comments.find(function(err, data){
-    if(data.length) return;
-    
-    // marta mendez
-    new comments({
-        patientId : '5718e761345e5a844307efb4',
-        name : 'Litio',
-        type : 0,
-        dateStart : new Date(2016,02,01),
-        dateEnd : new Date(),
-        time : 900,
-        dose : 150,
-        title : 'Medio comprimido',
-        text : 'Acompañar de comida',
-        prescription : true
-    }).save();
-    
-    new comments({
-        patientId : '5718e761345e5a844307efb4',
-        name : 'Risperidal',
-        type : 2,
-        dateStart : new Date(2016,02,01),
-        dateEnd : new Date(2016,02,29),
-        time : 900,
-        dose : 4000,
-        title : 'Medio comprimido',
-        text : 'Acompañar de comida',
-        prescription : true
-    }).save();
-});
-records.find(function(err, data){
-    if(data.length)
-        return;
-    new records({
-        patientId : '5718e761345e5a844307efb4',
-        date : new Date(2016, 2, 1),
-        eeag : 82,
-    hdrs : {
-        depr_mood : 1,
-        feel_guilty : 4,
-        suic : 0,
-        inso_early : 0,
-        inso_middle : 0,
-        inso_late : 0,
-        work_activ : 1,
-        retard : 2,
-        agitat : 4,
-        anxi_psych : 7,
-        anxi_somat : 3,
-        somsympt_gastr : 0,
-        somsympt_gener : 0,
-        geni_sympt : 2,
-        hypochon : 5,
-        loss_weight : 2,
-        insight : 0
-    },
-    ymrs : {
-        elev_mood : 1,
-        incr_act_ener : 2,
-        sexu_inters : 0,
-        sleep : 0,
-        irritab : 0,
-        speech : 1,
-        lan_though_dis : 4,
-        content : 1,
-        dis_aggr_behav : 2,
-        appearan : 0,
-        insight : 1
-    },
-    panss_pos : {
-        delsus : 2,
-        concep_disor : 0,
-        hallu_behav : 1,
-        excitem : 2,
-        grandios : 3,
-        suspc : 2,
-        hostil : 1
-    },
-    panss_neg : {
-        blun_affec : 2,
-        emot_withd : 3,
-        poot_rapor : 0,
-        pass_soc_withd : 0,
-        diff_abst_thin : 0,
-        lspont_convflow : 1,
-        steo_think : 5
-    },
-    panss_gen : {
-        soma_concer : 4,
-        anxiet : 2,
-        guilt_feels : 0,
-        tension : 1,
-        mann_post : 0,
-        depress : 3,
-        moto_retar : 0,
-        uncoop : 1,
-        unu_though : 0,
-        disorient : 2,
-        poor_atten : 5,
-        ljud_insight : 4,
-        dist_volit : 2,
-        pinp_contr : 3,
-        preoc : 0,
-        asoc_avoid : 0
-    },
-    }).save();
-    
-    new records({
-        patientId : '5718e761345e5a844307efb4',
-        date : new Date(2016, 3, 1),
-        eeag : 72,
-    hdrs : {
-        depr_mood : 2,
-        feel_guilty : 3,
-        suic : 1,
-        inso_early : 1,
-        inso_middle : 1,
-        inso_late : 1,
-        work_activ : 0,
-        retard : 0,
-        agitat : 0,
-        anxi_psych : 5,
-        anxi_somat : 4,
-        somsympt_gastr : 1,
-        somsympt_gener : 1,
-        geni_sympt : 3,
-        hypochon : 3,
-        loss_weight : 0,
-        insight : 0
-    },
-    ymrs : {
-        elev_mood : 0,
-        incr_act_ener : 0,
-        sexu_inters : 1,
-        sleep : 2,
-        irritab : 2,
-        speech : 3,
-        lan_though_dis : 3,
-        content : 1,
-        dis_aggr_behav : 2,
-        appearan : 0,
-        insight : 1
-    },
-    panss_pos : {
-        delsus : 1,
-        concep_disor : 1,
-        hallu_behav : 0,
-        excitem : 5,
-        grandios : 4,
-        suspc : 4,
-        hostil : 2
-    },
-    panss_neg : {
-        blun_affec : 2,
-        emot_withd : 2,
-        poot_rapor : 1,
-        pass_soc_withd : 1,
-        diff_abst_thin : 1,
-        lspont_convflow : 2,
-        steo_think : 3
-    },
-    panss_gen : {
-        soma_concer : 3,
-        anxiet : 1,
-        guilt_feels : 1,
-        tension : 2,
-        mann_post : 0,
-        depress : 0,
-        moto_retar : 0,
-        uncoop : 2,
-        unu_though : 1,
-        disorient : 0,
-        poor_atten : 3,
-        ljud_insight : 0,
-        dist_volit : 0,
-        pinp_contr : 0,
-        preoc : 1,
-        asoc_avoid : 1
-    },
-    }).save();
-});
-
 // middleware use
 app.use(function(req, res, next){
     res.locals.flash = req.session.flash;
@@ -303,10 +93,6 @@ app.get('/index', function(req, res){
         dashactive : true
     }
     res.render('index', context);
-});
-
-app.get('/ok', function(req,res){
-    res.render('ok');
 });
 
 app.get('/tracing', function(req, res){
@@ -335,8 +121,8 @@ app.post('/tracing/process', function(req, res){
                   return {
                       pac_id : phenotype._id, 
                       name : phenotype.name,
-                      birthDate : parseDate(phenotype.birthDate),
-                      gender : parseGender(phenotype.gender),
+                      birthDate : tools.parseDate(phenotype.birthDate),
+                      gender : tools.parseGender(phenotype.gender),
                   }
               })
             };
@@ -345,12 +131,11 @@ app.post('/tracing/process', function(req, res){
     }
     else if (form == 'updateprescriptions'){
         var pat_id = req.query.id;
-        console.log('Inicio: ' + req.body.begindate + ' Final ' + req.body.enddate);
-        var begindate = toDate(req.body.begindate);
-        var enddate = toDate(req.body.enddate);
+        console.log('Fecha: ' + req.body.date);
+        var date = tools.toDate(req.body.date);
         
-        comments.find({patientId : pat_id, dateStart : {$gte : begindate, $lte : enddate}}, function(err, results){
-            console.log('Quering prescriptions of patient ' + pat_id + ' between ' + begindate + ' and ' + enddate);
+        comments.find({user_id : pat_id, dateStart : {$gte : date}, dateEnd :{ $lte : date}}, function(err, results){
+            console.log('Quering active prescriptions of patient ' + pat_id + ' in ' + date);
             console.log('Results found: ' + results.length);
             var context = {
             pagetitle : 'Recetas',
@@ -361,18 +146,104 @@ app.post('/tracing/process', function(req, res){
             comm_list : results.map(function(comments){
                 return {
                     name : comments.name,
-                    dateStart : parseDate(comments.dateStart),
-                    dateEnd : parseDate(comments.dateEnd),
-                    time : parseMinutes(comments.time),
+                    type : coments.type,
+                    dateStart : tools.parseDate(comments.dateStart),
+                    dateEnd : tools.parseDate(comments.dateEnd),
+                    time : tools.parseMinutes(comments.time),
                     dose : comments.dose,
                     title : comments.title,
                     text : comments.text
                 }
-            })
+            });
         };
-            
-            res.render('patients/prescriptions', context);
+        res.render('patients/prescriptions', context);
         });
+    }
+    else if (form == 'editprescriptions'){
+        var pres_id = req.query.id;
+        var pat_id = req.query.patid;
+        console.log('Updating prescription ' + pres_id);
+        var begindate = tools.toDate(req.body.begindate);
+        var enddate = tools.toDate(req.body.enddate);
+        console.log(req.body.dose);
+        comments.update({_id : pres_id}, {
+            dateStart : begindate,
+            dateEnd : enddate,
+            time : tools.toMinutes(req.body.time),
+            name : req.body.name,
+            type : req.body.type,
+            title : req.body.title,
+            text : req.body.text,
+            dose : parseInt(req.body.dose),
+        }, function(err, result){
+            if (err)
+                console.error(err);
+            if(req.xhr)
+                return res.json({ success : true });
+            console.log('Prescription edited.');
+            req.session.flash = {
+                type : 'success',
+                intro : 'Receta editada',
+                message : 'La receta ha sido editada satisfactoriamente'
+            };
+            res.redirect(303,'/patient-info/'+pat_id+'/prescriptions');
+        });
+        
+        
+    }
+    else if (form == 'addprescription'){
+        var pat_id = req.query.patid;
+        var begindate = tools.toDate(req.body.begindate);
+        var enddate = tools.toDate(req.body.enddate);
+        console.log('Adding prescription');
+        new comments({
+            user_id : pat_id,
+            prescription : true,
+            dateStart : begindate,
+            dateEnd : enddate,
+            name : req.body.name,
+            type : req.body.type,
+            time : tools.toMinutes(req.body.time),
+            title : req.body.title,
+            text : req.body.text,
+            dose : parseInt(req.body.dose)
+        }).save(function(err){
+            if(err)
+                console.error(err);
+            if(req.xhr) 
+                return res.json({ success: true});
+            console.log('Prescription added.')
+            req.session.flash = {
+                type : 'success',
+                intro : 'Receta añadida',
+                message : 'Se ha añadido la receta a la base de datos'
+        };
+        
+            res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
+        });
+    }
+    
+    else if (form == 'deleteprescription'){
+        var pat_id = req.query.patid;
+        var pres_id = req.query.id;
+        console.log('Deleting prescription.');
+        comments.remove({_id : pes_id}, function(err){
+            if(err)
+                console.error(err);
+            if(req.xhr) 
+                return res.json({ success : true });
+            req.session.flash = {
+                type : 'success',
+                intro : 'Receta eliminada',
+                message : 'Se ha eliminado la receta a la base de datos'
+        };
+            res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
+        });       
+    }
+    else if(form == 'newrecord'){
+        var pat_id = req.query.id;
+        var date = tools.toDate(req.body.date).toISOString();
+        res.redirect(303,'/patient-info/'+pat_id+'/records/newrecord/'+date);
     }
 });
 
@@ -389,25 +260,34 @@ app.get('/patient-info/:pat_id/main', function(req, res){
             tracactive : true,
             mainactive : true,
             pat_id : pat_id,
-          pat_list : {
-                  pat_id : results._id, 
-                  name : results.name,
-                  birthDate : parseDate(results.birthDate),
-                  gender : parseGender(results.gender),
-                  conviviality : parseConviviality(results.conviviality),
-                  email : results.email,
-                  diagnosis : results.diagnosis,
-                  ageOfOnset : results.ageOfOnset,
-                  sensitiveToLithium : parseBoolean(results.sensitiveToLithium),
-                  sensitiveToCarbamazepine : parseBoolean(results.sensitiveToCarbamazepine),
-                  sensitiveToValproate : parseBoolean(results.sensitiveToValproate),
-                  seasonality : parseBoolean(results.seasonality),
-                  freqManiacCrises : results.freqManiacCrises,
-                  freqMixedCrises : results.freqMixedCrises,
-                  freePeriod : results.freePeriod,
-                  psychoticSymptoms : parseBoolean(results.psychoticSymptoms),
-                  otherDiagnoses : results.otherDiagnoses,
-              }
+            pat : {
+                pat_id : results._id, 
+                name : results.name,
+                birthDate : tools.parseDate(results.birthDate),
+                gender : tools.parseGender(results.gender),
+                cohabitation : tools.parseCohabitation(results.cohabitation),
+                email : results.email,
+                diagnosis : results.diagnosis,
+                diagnosisAge : results.diagnosisAge,
+                senLit : tools.parseBoolean(results.senLit),
+                senCar : tools.parseBoolean(results.senCar),
+                senVal : tools.parseBoolean(results.senVal),
+                seasonality : tools.parseBoolean(results.seasonality),
+                maniaCrises : results.maniaCrises,
+                mixedCrises : results.mixedCrises,
+                freePeriod : results.freePeriod,
+                psycSymp : tools.parseBoolean(results.psycSymp),
+                others : results.others,
+            },
+            raw : {
+                bday : tools.toRawDate(results.birthDate),
+                gender : results.gender,
+                lisens : results.senLit,
+                carbsens : results.senCar,
+                valsens : results.senVal,
+                season : results.seasonality,
+                psyc : results.psycSymp,
+            }
         };
         res.render('patients/main', context);
     });
@@ -422,7 +302,6 @@ app.get('/register', function(req, res){
 });
 
 app.post('/register/process', function(req, res){
-
     console.log('Form (from querystring): ' + req.query.form);
     /*
         TODO Typical db-related operations:
@@ -432,42 +311,85 @@ app.post('/register/process', function(req, res){
     */
     // adding info to DB
    new phenotype({
-        name : req.body.pac_name,
-        birthDate : toDate(req.body.bday),
-        gender : toBoolean(req.body.gender),
         email : req.body.email,
-        conviviality : parseInt(req.body.conviviality),
+        name : req.body.pac_name,
+        pin : Math.floor(Math.random() * 999999),
+        birthDate : tools.toDate(req.body.bday),
+        gender : tools.toBoolean(req.body.gender),
+        cohabitation : parseInt(req.body.cohabitation),
         diagnosis : req.body.diag,
-        ageOfOnset : req.body.ageOfOnset,
-        sensitiveToLithium : toBoolean(req.body.litsens),
-        sensitiveToValproate : toBoolean(req.body.valsens),
-        sensitiveToCarbamazepine : toBoolean(req.body.carsens),
-        stationality : toBoolean(req.body.station),
-        psychoticSymptoms : toBoolean(req.body.psychs),
-        freqManiacCrises : parseInt(req.body.mancrisis),
-        freqMixedCrises : parseInt(req.body.mixcrisis),
+        diagnosisAge : req.body.diagAge,
+        senLit : tools.toBoolean(req.body.litsens),
+        senVal : tools.toBoolean(req.body.valsens),
+        senCar : tools.toBoolean(req.body.carsens),
+        seasonality : tools.toBoolean(req.body.season),
+        maniaCrises : parseInt(req.body.mancrisis),
+        mixedCrises : parseInt(req.body.mixcrisis),
         freePeriod : parseInt(req.body.freeper),
-        otherDiagnoses : req.body.others,
+        psycSymp : tools.toBoolean(req.body.psychs),
+        others : req.body.others,
     }).save(function(err){
        if(req.xhr) 
            return res.json({ success: true});
-       console.log('Patient added.')
+        console.log('Patient added.')
         req.session.flash = {
             type : 'success',
             intro : 'User added!',
             message : 'The new patient has been added to the DB.'
         };
-       console.log(req.session.flash);
        return res.redirect(303, '/index');
    }); 
 });
 
+app.get('/register/unregister/:pat_id', function(req, res){
+    var pat_id = req.params.pat_id;
+    phenotype.remove({_id : pat_id}, function(err){
+        if(err){
+            console.log('Error while trying to delete phenotype data from patient.');
+            req.session.flash = {
+                type : 'danger',
+                intro : 'Error',
+                message : 'Error while trying to delete phenotype data from patient.'
+            };
+        }
+        comments.remove({user_id : pat_id}, function(err){
+            if(err){
+                console.log('Error while trying to delete prescriptions or messages data from patient.');
+                req.session.flash = {
+                    type : 'danger',
+                    intro : 'Error',
+                    message : 'Error while trying to delete prescriptions or messages data from patient.'
+                };
+            }
+            records.remove({user_id : pat_id}, function(err){
+                if(err){
+                    console.log('Error while trying to delete medical test data from patient.');
+                    req.session.flash = {
+                        type : 'danger',
+                        intro : 'Error',
+                        message : 'Error while trying to delete medical test data from patient.'
+                    };
+                }
+                if(req.xhr)
+                    return res.json({ success : true});
+                console.log('Patient info totally deleted.');
+                req.session.flash = {
+                    type : 'success',
+                    intro : 'User deleted!',
+                    message : 'All patient data has been removed from the DB.'
+                };
+                return res.redirect(303, '/index');
+            });
+        });
+    });
+});
+
 app.get('/patient-info/:pat_id/prescriptions', function(req, res){
     var pat_id = req.params.pat_id; // obtain pat_id from url
-    comments.find({ patientId : pat_id}, function(err, results){
+    comments.find({ user_id : pat_id}, function(err, results){
         if(err) console.error(err);
         console.log('Retrieving comments info from patient ' + pat_id);
-        console.log('Number of results found: ' + results.lenght); 
+        console.log('Number of results found: ' + results.length); 
         // creating context
         var context = {
             pagetitle : 'Recetas',
@@ -477,10 +399,12 @@ app.get('/patient-info/:pat_id/prescriptions', function(req, res){
             pat_id : pat_id,
             comm_list : results.map(function(comments){
                 return {
+                    presid : comments._id,
                     name : comments.name,
-                    dateStart : parseDate(comments.dateStart),
-                    dateEnd : parseDate(comments.dateEnd),
-                    time : parseMinutes(comments.time),
+                    type : comments.type,
+                    dateStart : tools.parseDate(comments.dateStart),
+                    dateEnd : tools.parseDate(comments.dateEnd),
+                    time : tools.parseMinutes(comments.time),
                     dose : comments.dose,
                     title : comments.title,
                     text : comments.text
@@ -516,23 +440,38 @@ app.get('/patient-info/:pat_id/records', function(req, res){
                 recoactive : true,
                 pat_id : pat_id,
                 record : {
-                    date : parseDate(results.date),
+                    date : tools.parseDate(results.date),
                     eeag : results.eeag,
+                    hdrs : results.hdrs,
+                    hdrs_total : tools.parseRecord(results.hdrs, 'hdrs'),
+                    ymrs : results.ymrs,
+                    ymrs_total : tools.parseRecord(results.ymrs, 'ymrs'),
+                    panss_gen : results.panss.panss_gen,
+                    panss_gen_total : tools.parseRecord(results.panss.panss_gen, 'panss_gen'),
+                    panss_neg : results.panss.panss_neg,
+                    panss_neg_total : tools.parseRecord(results.panss.panss_neg, 'panss_neg'),
+                    panss_pos : results.panss.panss_pos,
+                    panss_pos_total : tools.parseRecord(results.panss.panss_pos, 'panss_pos'),
+                    panss_total : this.panss_gen_total + this.panss_pos_total + this.panss_neg_total
                 }
             };
             res.render('patients/records', context);
         }
     });
 });
-// to show requests headers information
-/*
-app.get('/headers', function(req, res){
-    res.set('Content-Type','text/plain');
-    var s : '';
-    for(var name in req.headers) s+= name + ': ' + req.headers[name] + '\n';
-    res.send(s);
+
+app.get('/patient-info/:pat_id/records/newrecord/:date', function(req, res){
+    var context = {
+        pagetitle : 'Informes médicos',
+        patientview : true,
+        tracactive : true,
+        recoactive : true,
+        pat_id : req.params.pat_id,
+        date : parseDate(req.params.date)
+    }
+    res.render('patients/newrecord', context);
 });
-*/
+
 // error handlers
 
 // error 404 catch-all handler
@@ -555,78 +494,6 @@ app.listen(app.get('port'), function(){
 
 
 // auxiliary objects
-var weekdaynames = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
-var monthnames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-// auxiliary functions
-// Parses the date in a ISODate string (e.g. Fri Aug 27 1993 11:00:00 GMT+0200 (CEST)) format and converts it into a Spanish time and date format
-function parseDate(date){
-    var parsedDate = new Date(date);
-    var weekday = weekdaynames[parsedDate.getDay()-1];
-    // getMonth in [0..11]
-    var month = monthnames[parsedDate.getMonth()];
-    return weekday.concat(", ", parsedDate.getDate()," ",month.toString(), " ", parsedDate.getFullYear());
-};
-
-// Parses boolean values into Spanish words for true and false
-function parseBoolean(value){
-    var parsedValue = "No";
-    if(value)
-        parsedValue = "Si";
-    
-    return parsedValue;
-}
-
-// Parses conviviality values (0: alone, 1: couple, 2: couple and childs, 3: parents, 4: other)
-function parseConviviality(conv){
-    switch(conv){
-        case 0: return 'Solo';
-        case 1: return 'Pareja';
-        case 2: return 'Pareja e hijos';
-        case 3: return 'Familia de origen';
-        default : return 'Otros';
-    }
-}
-
-// Parses a date from a form given in DD/MM/YYYY format and returns a new Date
-function toDate(date){
-    if(date == null)
-        return null;
-    var regex = /\/|\-/;
-    var parsedDate = date.split(regex);
-    console.log('La fecha leída es: ' + parsedDate);
-    // if format is YYYY/MM/DD 
-    if(parsedDate[0].length == 4){
-        return new Date(parseInt(parsedDate[0], 10), parseInt(parsedDate[1], 10)-1, parseInt(parsedDate[2], 10));
-    }
-    else // if format is DD/MM/YYYY
-        return new Date(parseInt(parsedDate[2], 10), parseInt(parsedDate[1],10)-1, parseInt(parsedDate[0],10));
-}
-
-// Parses a string from a form and returns its value into a boolean
-function toBoolean(boolean){
-    if(boolean == "T"){
-        return true;
-    }
-    else if (boolean == "F")
-        return false;
-}
-
-// Parses a integer containing minutes from 00:00 and returns a String with the hour un format HH:MM (24h)
-function parseMinutes(mins){
-    var hours = mins/60;
-    var minutes = mins % 60;
-    if(minutes >= 0 && minutes <10)
-        minutes = '0' + minutes;
-    return hours + ':' + minutes;
-}
-
-// Parses gender and returns the appropiate string
-function parseGender(gender){
-    if(gender) 
-        return 'Mujer';
-    else
-        return 'Hombre'
-}
 
 
 

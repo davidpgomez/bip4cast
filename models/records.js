@@ -1,77 +1,79 @@
 var mongoose =  require('mongoose');
 
 var recordsSchema = mongoose.Schema({
-    patientId : String,
+    user_id : String,
     date : Date,
     eeag : Number,
     hdrs : {
-        depr_mood : Number,
-        feel_guilty : Number,
+        deprMood : Number,
+        feelGuilty : Number,
         suic : Number,
-        inso_early : Number,
-        inso_middle : Number,
-        inso_late : Number,
-        work_activ : Number,
+        insoEarly : Number,
+        insoMiddle : Number,
+        insoLate : Number,
+        workActiv : Number,
         retard : Number,
         agitat : Number,
-        anxi_psych : Number,
-        anxi_somat : Number,
-        somsympt_gastr : Number,
-        somsympt_gener : Number,
-        geni_sympt : Number,
+        anxiPsych : Number,
+        anxiSomat : Number,
+        somsymptGastr : Number,
+        somsymptGener : Number,
+        geniSympt : Number,
         hypochon : Number,
-        loss_weight : Number,
+        lossWeight : Number,
         insight : Number
     },
     ymrs : {
-        elev_mood : Number,
-        incr_act_ener : Number,
-        sexu_inters : Number,
+        elevMood : Number,
+        incrActEner : Number,
+        sexuInters : Number,
         sleep : Number,
         irritab : Number,
         speech : Number,
-        lan_though_dis : Number,
+        lanThoughDis : Number,
         content : Number,
-        dis_aggr_behav : Number,
+        disAggrBehav : Number,
         appearan : Number,
         insight : Number
     },
-    panss_pos : {
+    panss : {
+        panss_pos : {
             delsus : Number,
-            concep_disor : Number,
-            hallu_behav : Number,
+            concepDisor : Number,
+            halluBehav : Number,
             excitem : Number,
             grandios : Number,
             suspc : Number,
             hostil : Number
         },
-    panss_neg : {
-            blun_affec : Number,
-            emot_withd : Number,
-            poot_rapor : Number,
-            pass_soc_withd : Number,
-            diff_abst_thin : Number,
-            lspont_convflow : Number,
-            steo_think : Number
+        panss_neg : {
+            blunAffec : Number,
+            emotWithd : Number,
+            pootRapor : Number,
+            passSocWithd : Number,
+            diffAbstThin : Number,
+            lspontConvflow : Number,
+            steoThink : Number
         },
-    panss_gen : {
-            soma_concer : Number,
+        panss_gen : {
+            somaConcer : Number,
             anxiet : Number,
-            guilt_feels : Number,
+            guiltFeels : Number,
             tension : Number,
-            mann_post : Number,
+            mannPost : Number,
             depress : Number,
-            moto_retar : Number,
+            motoRetar : Number,
             uncoop : Number,
-            unu_though : Number,
+            unuThough : Number,
             disorient : Number,
-            poor_atten : Number,
-            ljud_insight : Number,
-            dist_volit : Number,
-            pinp_contr : Number,
+            poorAtten : Number,
+            ljudInsight : Number,
+            distVolit : Number,
+            pinpContr : Number,
             preoc : Number,
-            asoc_avoid : Number
-        },
+            asocAvoid : Number
+        }
+    }
 });
 
 var records = mongoose.model('records', recordsSchema);

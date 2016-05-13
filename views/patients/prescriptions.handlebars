@@ -1,43 +1,145 @@
-<script>
-$(document).ready(function () {
-    $('#editingPres').on('show.bs.modal', function (e) {
-        $('#patientId').val($(e.relatedTarget).data('id'));
+{{#section 'jquery'}}
+    <script>
+    $('#editingPres').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Button that triggered the modal
+      var act = button.data('action');
+      var patid = button.data('patid'); // Extract info from the patient id
+      if(act == "edit"){
+          // the form action is set to be the one which edits an existing prescription
+          var drugtype = button.data('type');
+          var presid = button.data('pid'); 
+          var name = button.data('name');
+          $(this).find('.modal-title').text('Editar receta');
+          $(this).find('.modal-body form').attr('action', '/tracing/process/?form=editprescriptions&patid='+patid+'&id='+ presid);
+          $("select#type").find("option#"+drugtype).attr('selected', true);
+      }
+        else if(act == "add"){
+            $(this).find('.modal-title').text('Añadir receta');
+            $(this).find('.modal-body form').attr('action', '/tracing/process/?form=addprescription&patid='+patid);
+        }
     });
-});
-</script>
+    
+    $('#removPres').on('show.bs.modal', function (event){
+        var button = $(event.relatedTarget);
+        var presid = button.data('pid');
+        var patid = button.data('patid');
+        $(this).find('.modal-footer form').attr('action', '/tracing/process/?form=deleteprescription&patid='+patid+'&id='+ presid);
+    });
+    </script>
+{{/section}}
 
-
-<!-- Editing  recipe -->
+{{!-- Editing prescription modal --}}
 <div id="editingPres" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Editar receta</h4>
+                <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <p class="text-warning"><small>Si no se confirman los cambios, estos se perderán</small></p>
-                <input type="text" name="patientId" id="patientId" value="">
+                <form name="edit" class="form-horizontal" role="form"  method="post" id="editPresFrom">
+                    <fieldset class="form-group">
+                        <label for="drug" class="col-sm-3 control-label">Medicamento</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="name" class="col-sm-9 form-control" required>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="type" class="col-sm-3 control-label">Tipo medicamento</label>
+                        <div class="col-sm-6">
+                            <select name="type" class="form-control" id="type" required>
+                                <option value="0">Litio</option>
+                                <option value="1">Antiepilépticos</option>
+                                <option value="2">Antipsicóticos</option>
+                                <option value="3">Ansiolíticos/hipnóticos</option>
+                                <option value="4">Antidepresivos</option>
+                                <option value="5">Otros</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="dose" class="col-sm-3 control-label">Dosis</label>
+                        <div class="col-sm-6">
+                            <input type="number" name="dose" class="form-control">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group" >
+                        <label for="time" class="col-sm-3 control-label">Hora</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="time" class="form-control">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="begindate" class="col-sm-3 control-label">Comienzo</label>
+                        <div class="col-sm-6">
+                            <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="enddate" class="col-sm-3 control-label">Final</label>
+                        <div class="col-sm-6">
+                            <input type="date" class="form-control" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="title" class="col-sm-3 control-label">Título</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="title" name="title">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="text" class="col-sm-3 control-label">Texto</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="text" name="text">
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <p class="text-warning"><small>Si no se confirman los cambios, estos se perderán</small></p>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{!-- Deleting prescription modal --}}
+<div id="removPres" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Eliminar receta</h4>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea eliminar esta receta?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">Guardar cambios</button>
+                <p class="text-danger"><small>Este cambio no podrá deshacerse</small></p>
+                <form method="post">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Eliminar</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
+
 <form action="/tracing/process?form=updateprescriptions&id={{pat_id}}" method="post"> 
     <fieldset class="form-group">
-        <label for="begindate">Comienzo</label>
-        <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
-    </fieldset>
-    <fieldset class="form-group">
-        <label for="enddate">Final</label>
-        <input type="date" class="form-control" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+        <label for="date">Filtrar por fecha</label>
+            <input type="date" class="form-control" id="date" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+            <small class="text-muted">
+                Muestra las recetas que estaban activas en la fecha seleccionada.
+            </small>
     </fieldset>
     <input type="submit" class="btn btn-primary" value="Actualizar">
 </form>
+<br>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editingPres" data-action="add" data-patid="{{pat_id}}"> <span class="glyphicon glyphicon-plus"></span> Añadir nueva </button></td>
+
 <br>
 <div class="table-responsive">
     <table class="table table-striped">
@@ -48,7 +150,7 @@ $(document).ready(function () {
                 <th> Final </th>
                 <th> Hora </th>
                 <th> Dosis (mg)</th>
-                <th> Editar </th>
+                <th> </th>
             </tr>
         </thread>
         <tbody>
@@ -59,8 +161,11 @@ $(document).ready(function () {
                     <td> {{dateEnd}} </td>
                     <td> {{time}} </td>
                     <td> {{dose}} </td>
-                    <td> <a href="#editingPres"class="btn btn-info" data-toggle="modal"> ||</a></td>
-            </tr>
+                    <td> 
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingPres" data-pid="{{presid}}" data-patid="{{../pat_id}}" data-name="{{name}}" data-type="{{type}}" data-time="{{time}}" data-dose="{{dose}}"> <span class="glyphicon glyphicon-edit"></span> </button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removPres" data-pid="{{presid}}" data-patid="{{../pat_id}}"> <span class="glyphicon glyphicon-remove"></span></button>
+                    </td>
+                </tr>
             {{/each}}
         </tbody>
     </table>

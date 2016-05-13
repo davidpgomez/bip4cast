@@ -1,13 +1,151 @@
+{{#section 'jquery'}}
+<script src="/js/inputmask.js"></script>
+<script>
+    $(document).ready(function() {
+      $(":input").inputmask();
+    });
+  </script>
+{{/section}}
+<div id="addnewrecord" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Añadir nuevo test</h4>
+            </div>
+            <form method="post" action="/tracing/process?form=newrecord&id={{pat_id}}">
+                <div class="modal-body">
+                    <a href="/patient-info/{{pat_id}}/newtest/newhrds" class="btn btn-primary">HDRS</a>
+                    <a href="/patient-info/{{pat_id}}/newtest/newymrs" class="btn btn-primary">YMRS</a>
+                    <a href="/patient-info/{{pat_id}}/newtest/newpanss" class="btn btn-primary">PANSS</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <form action="/tracing/process?form=updaterecords&id={{pat_id}}" method="post"> 
     <fieldset class="form-group">
         <label for="begindate">Fecha</label>
-        <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+        <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" data-inputmask="'mask': '99/99/9999'">
     </fieldset>
     <input type="submit" class="btn btn-primary" value="Obtener informes">
 </form>
 
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addnewrecord"> <span class="glyphicon glyphicon-plus"></span> Añadir test </button></td>
+
 <h2>Resultados de {{record.date}}</h2>
-EEAG: {{record.eeag}}<br>
-HDRS: {{record.hdrs.total}}<br>
-YMRS: {{record.ymrs.total}}<br>
-SAPS: {{record.saps.total}}<br>
+<div class="btn-group btn-group-justified" role="group">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" href="#eeag" data-toggle="tab" role="tab" aria-expanded="true">EEAG <span class="label label-default">{{record.eeag}}</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-expanded="false" href="#hdrs" role="tab" data-toggle="tab">HDRS <span class="label label-default">{{record.hdrs_total}}</span></a></li>
+        <li class="nav-item">
+            <a class="nav-link" href="#ymrs" role="tab" data-toggle="tab">YMRS <span class="label label-default">{{record.ymrs_total}}</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#panss" role="tab" data-toggle="tab">PANSS </span></a>
+        </li>
+    </ul>
+</div>
+<div class="tab-content">
+    <div id="eeag" class="tab-pane" role="tabpanel" aria-expanded="false">
+        
+    </div>
+    <div id="hdrs" class="tab-pane" role="tabpanel" aria-expanded="true">
+        <p>Humor depresivo:  {{record.hdrs.depr_mood}}</p>
+        <p>Sentimientos de culpa: {{record.hdrs.feel_guilty}}</p>
+        <p>Suicidio: {{record.hdrs.suic}}</p>
+        <p>Insomnio precoz: {{record.hdrs.inso_early}}</p>
+        <p>Insomnio intermedio: {{record.hdrs.inso_middle}}</p>
+        <p>Insomnio tardío: {{record.hdrs.inso_late}}</p>
+        <p>Trabajo y actividades: {{record.hdrs.work_activ}}</p>
+        <p>Inhibición psicomotora: {{record.hdrs.retard}}</p>
+        <p>Agitación psicomotora: {{record.hdrs.agitat}}</p>
+        <p>Ansiedad psíquica: {{record.hdrs.anxi_psych}}</p>
+        <p>Ansiedad somática: {{record.hdrs.anxi_somat}}</p>
+        <p>Síntomas somáticos gastrointestinales: {{record.hdrs.somsympt_gastr}}</p>
+        <p>Síntomas somáticos generales: {{record.hdrs.somsympt_gener}}</p>
+        <p>Síntomas genitales: {{record.hdrs.geni_sympt}}</p>
+        <p>Hipocondría: {{record.hdrs.hypochon}}</p>
+        <p>Pérdida de peso: {{record.hdrs.loss_weight}}</p>
+        <p>Conciencia de: {{record.hdrs.insight}}</p>
+    </div>
+    <div id="ymrs" class="tab-pane" role="tabpanel" aria-expanded="true">
+        <p>Euforia: {{record.ymrs.elev_mood}}</p>
+        <p>Hiperactividad: {{record.ymrs.incr_act_ener}}</p>
+        <p>Impulso sexual: {{record.ymrs.sexu_inters}}</p>
+        <p>Sueño: {{record.ymrs.sleep}}</p>
+        <p>Irritabilidad: {{record.ymrs.irritab}}</p>
+        <p>Expresión verbal: {{record.ymrs.speech}}</p>
+        <p>Trastornos del curso del pensamiento y el lenguaje: {{record.ymrs.lan_though_dis}} </p>
+        <p>Trastornos del contenido del pensamiento: {{record.ymrs.content}}</p>
+        <p>Agresividad: {{record.ymrs.dis_aggr_behav}}</p>
+        <p>Apariencia: {{record.ymrs.appearan}}</p>
+        <p>Conciencia de enfermedad: {{record.ymrs.insight}}</p>
+    </div>
+    <div id="panss" class="tab-pane panel-group" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default">
+            <div id="panss_gen" class="panel-heading" role="tab">
+                <h3 class="panel-title"> 
+                    <a data-toggle="collapse" data-target="#panss_gen_info"  href="#panss_gen_info">PANSS General <span class="label label-primary">{{record.panss_gen_total}}</span><span class="caret"></a>
+                </h3>
+            </div>
+            <div id="panss_gen_info" class="panel-collapse collapse in" style="">
+                <div class="panel-body">
+                    <p>Preocupaciones somáticas: {{record.panss_gen.soma_concer}}</p>
+                    <p>Ansiedad: {{record.panss_gen.anxiet}}</p>
+                    <p>Sentimientos de culpa: {{record.panss_gen.guilt_feels}}</p>
+                    <p>Tensión motora: {{record.panss_gen.tension}}</p>
+                    <p>Manierismos y posturas: {{record.panss_gen.mann_post}}</p>
+                    <p>Depresión: {{record.panss_gen.depress}}</p>
+                    <p>Retardo motor: {{record.panss_gen.moto_retar}}</p>
+                    <p>Falta de colaboración: {{record.panss_gen.uncoop}}</p>
+                    <p>Inusuales contenidos del pensamiento: {{record.panss_gen.unu_though}}</p>
+                    <p>Desorientación: {{record.panss_gen.disorient}}</p>
+                    <p>Atención deficiente: {{record.panss_gen.poor_atten}}</p>
+                    <p>Ausencia de juicio e introspección: {{record.panss_gen.ljud_insight}}</p>
+                    <p>Trastornos de la volición: {{record.panss_gen.dist_volit}}</p>
+                    <p>Control deficiente de impulsos: {{record.panss_gen.pinp_contr}}</p>
+                    <p>Preocupación: {{record.panss_gen.preoc}} </p>
+                    <p>Evitación social activa: {{record.panss_gen.asoc_avoid}}</p>
+                </div>
+            </div>
+            <div id="panss_pos" class="panel-heading" role="tab">
+                <h3 class="panel-title">
+                    <a data-toggle="collapse" data-target="#panss_pos_info" href="#panss_pos_info">PANSS Positiva <span class="label label-primary">{{record.panss_pos_total}}</span><span class="caret"></a>
+                </h3>
+            </div>
+            <div id="panss_pos_info" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <p>Delirios: {{record.panss_pos.delsus}}</p>
+                    <p>Desorganización conceptual: {{record.panss_pos.concep_disor}}</p>
+                    <p>Conducta alucinatoria: {{record.panss_pos.hallu_behav}}</p>
+                    <p>Excitación: {{record.panss_pos.excitem}}</p>
+                    <p>Grandiosidad: {{record.panss_pos.grandios}}</p>
+                    <p>Suspicacia/perjuicio: {{record.panss_pos.suspc}}</p>
+                    <p>Hostilidad: {{record.panss_pos.hostil}}</p>
+                </div>
+            </div>
+            <div id="panss_neg" class="panel-heading" role="tab">
+                <h3 class="panel-title">
+                    <a data-toggle="collapse" data-target="#panss_neg_info" href="#panss_neg_info">PANSS Negativa <span class="label label-primary"> {{record.panss_neg_total}}</span><span class="caret"></a>
+                </h3>
+            </div>
+            <div id="panss_neg_info" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <p>Embotamiento afectivo: {{record.panss_neg.blun_affec}}</p>
+                    <p>Retracción emocional: {{record.panss_neg.emot_withd}}</p>
+                    <p>Pobre relación: {{record.panss_neg.poot_rapor}}</p>
+                    <p>Retracción social, apatía pasiva: {{record.panss_neg.pass_soc_withd}}</p>
+                    <p>Dificultad de pensamiento abstracto: {{record.panss_neg.diff_abst_thin}}</p>
+                    <p>Falta de espontaneidad y fluidez de la conversación: {{record.panss_neg.lspont_convflow}}</p>
+                    <p>Pensamiento estereotipado: {{record.panss_neg.steo_think}}</p>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div>
+

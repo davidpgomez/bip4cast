@@ -20,7 +20,7 @@
     </fieldset>
     <fieldset class="form-group">
         <label for="conv">Convivencia</label>
-        <select name="conviviality" class="form-control" id="conv" required>
+        <select name="cohabitation" class="form-control" id="conv" required>
             <option value="0">Solo</option>
             <option value="1">Pareja</option>
             <option value="2">Pareja e hijos</option>
@@ -34,8 +34,8 @@
         <small class="text-muted">En formato <a href="https://eciemaps.mspsi.es/ecieMaps/browser/index_10_mc.html">CIE-10</a></small>
     </fieldset>
     <fieldset class="form-group">
-        <label for="onset">Edad inicio de síntomas</label>
-        <input type="number" class="form-control" name="ageOfOnset" id="onset" required>
+        <label for="diagAge">Edad inicio de síntomas</label>
+        <input type="number" class="form-control" name="diagAge" id="diagAge" required>
     </fieldset>
     <fieldset class="form-group">
         <label class="checkbox-inline">
@@ -48,7 +48,7 @@
             <input type="checkbox" name="carsens" value="T"> Sensible a la carbamacepina
         </label><br>
         <label class="checkbox-inline">
-            <input type="checkbox" name="station" value="T"> Estacionalidad
+            <input type="checkbox" name="season" value="T"> Estacionalidad
         </label>
         <label class="checkbox-inline">
             <input type="checkbox" name="psychs" value="T"> Síntomas psicóticos
@@ -70,5 +70,10 @@
         <label for="others">Otros diagnósticos</label>
         <textarea class="form-control" id="others" name="others"></textarea>
     </fieldset>
-    <input id="button" type="submit" class="btn btn-primary" value="Finalizar">
+    <fieldset class="form-group">
+        <label for="accept" class="checkbox-inline">
+            <input type="checkbox" id="accept" onChange="document.getElementById('confirmRegistration').disabled = !this.checked;"> El paciente ha leído, consentido y firmado la documentación que el profesional le ha ofrecido para participar en este proyecto.
+        </label>
+    </fieldset>
+    <input id="confirmRegistration" type="submit" class="btn btn-primary" value="Finalizar">
 </form>
