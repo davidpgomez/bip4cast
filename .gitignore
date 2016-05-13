@@ -2,7 +2,7 @@
 node_modules*
 bin*
 data*
-lib*
+lib/readme
 
 # bootstrap files
 public/bootstrap*
