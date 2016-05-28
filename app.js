@@ -154,7 +154,7 @@ app.post('/tracing/process', function(req, res){
                     title : comments.title,
                     text : comments.text
                 }
-            });
+            })
         };
         res.render('patients/prescriptions', context);
         });
@@ -221,8 +221,7 @@ app.post('/tracing/process', function(req, res){
         
             res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
         });
-    }
-    
+    }    
     else if (form == 'deleteprescription'){
         var pat_id = req.query.patid;
         var pres_id = req.query.id;
@@ -282,11 +281,12 @@ app.get('/patient-info/:pat_id/main', function(req, res){
             raw : {
                 bday : tools.toRawDate(results.birthDate),
                 gender : results.gender,
-                lisens : results.senLit,
-                carbsens : results.senCar,
-                valsens : results.senVal,
-                season : results.seasonality,
-                psyc : results.psycSymp,
+                lisens : tools.parseRawBoolean(results.senLit),
+                carbsens : tools.parseRawBoolean(results.senCar),
+                valsens : tools.parseRawBoolean(results.senVal),
+                season : tools.parseRawBoolean(results.seasonality),
+                psyc : tools.parseRawBoolean(results.psycSymp),
+                cohab : results.cohabitation
             }
         };
         res.render('patients/main', context);
@@ -407,7 +407,11 @@ app.get('/patient-info/:pat_id/prescriptions', function(req, res){
                     time : tools.parseMinutes(comments.time),
                     dose : comments.dose,
                     title : comments.title,
-                    text : comments.text
+                    text : comments.text,
+                    raw : {
+                        dateStart : tools.toRawDate(comments.dateStart),
+                        dateEnd : tools.toRawDate(comments.dateEnd)
+                    }
                 }
             })
         };
@@ -460,14 +464,14 @@ app.get('/patient-info/:pat_id/records', function(req, res){
     });
 });
 
-app.get('/patient-info/:pat_id/records/newrecord/:date', function(req, res){
+app.get('/patient-info/:pat_id/records/newtest', function(req, res){
+    var test = req.params.type;
     var context = {
         pagetitle : 'Informes médicos',
         patientview : true,
         tracactive : true,
         recoactive : true,
         pat_id : req.params.pat_id,
-        date : parseDate(req.params.date)
     }
     res.render('patients/newrecord', context);
 });

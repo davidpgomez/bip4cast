@@ -1,28 +1,33 @@
 {{#section 'jquery'}}
     <script>
          $('#editingPat').on('show.bs.modal', function (event) {
-            if({{raw.lisens}}){
-                $('input[name="litsens"]').prop('checked', true);
-            }
-            if({{raw.carbsens}}){
-                $('input[name="carsens"]').prop('checked', true);
-            }
-            if({{raw.valsens}}){
-                $('input[name="valsens"]').prop('checked', true);
-            }
-            if({{raw.season}}){
-                $('input[name="station"]').prop('checked', true);
-            }
-            if({{raw.psyc}}){
-                $('input[name="psychs"]').prop('checked', true);
-            }
-            if({{raw.gender}}){
-                // woman
-                $('select option[value="T"]').attr("selected",true);
-            }
-            else{
-                $('select option[value="F"]').attr("selected",true);
-            }
+             // modify gender selector
+             if({{raw.gender}}){
+                 $(this).find('.modal-body select#gender').val("T");
+             }
+             else{
+                 $(this).find('.modal-body select#gender').val("F");
+             }
+            // modify cohabitation selector
+             $(this).find('.modal-body select#cohab').val({{raw.cohab}});
+
+             // modify drugs sensivity
+             if({{raw.lisens}}){
+                 $(this).find('.modal-body input#litsens').prop('checked', true);
+             }
+             if({{raw.carbsens}}){
+                 $(this).find('.modal-body input#carsens').prop('checked', true);
+             }
+             if({{raw.valsens}}){
+                 $(this).find('.modal-body input#valsens').prop('checked', true);
+             }
+             if({{raw.season}}){
+                 $(this).find('.modal-body input#station').prop('checked', true);
+             }
+             if({{raw.psyc}}){
+                 $(this).find('.modal-body input#psychs').prop('checked', true);
+             }
+            
          });
     </script>
 {{/section}}
@@ -66,7 +71,7 @@
                     <fieldset class="form-group">
                         <label for="conv" class="col-sm-3 control-label">Vive con</label>
                             <div class="col-sm-6">
-                                <select name="conviviality" class="form-control" id="conv" required>
+                                <select name="conviviality" class="form-control" id="cohab" required>
                                     <option value="0">Solo</option>
                                     <option value="1">Pareja</option>
                                     <option value="2">Pareja e hijos</option>
@@ -92,19 +97,19 @@
                         <label class="col-sm-3 control-label">Alergias y sensibilidades</label>
                         <div class="col-sm-6">
                             <label>
-                                <input type="checkbox" name="litsens" value="T"> Sensible al litio
+                                <input type="checkbox" name="litsens" id="litsens" value="T"> Sensible al litio
                             </label>
                             <label>
-                                <input type="checkbox" name="valsens" value="T"> Sensible al valproato
+                                <input type="checkbox" name="valsens" id="valsens" value="T"> Sensible al valproato
                             </label>
                             <label>
-                                <input type="checkbox" name="carsens" value="T"> Sensible a la carbamacepina
+                                <input type="checkbox" name="carsens" id="carsens" value="T"> Sensible a la carbamacepina
                             </label><br>
                             <label>
-                                <input type="checkbox" name="station" value="T"> Estacionalidad
+                                <input type="checkbox" name="station" id="station" value="T"> Estacionalidad
                             </label>
                             <label>
-                                <input type="checkbox" name="psychs" value="T"> Síntomas psicóticos
+                                <input type="checkbox" name="psychs" id="psychs" value="T"> Síntomas psicóticos
                             </label>
                         </div>
                     </fieldset>

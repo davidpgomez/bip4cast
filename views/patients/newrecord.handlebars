@@ -1,5 +1,63 @@
+{{#section 'jquery'}}
+    <script>
+        $('.hdrs_question').blur(function () {
+        var sum = 0;
+        $('.hdrs_question').each(function() {
+            sum += Number($(this).val());
+        });
+        $('#hdrs_total').val(sum);
+    });
+    </script>
+    <script>
+        $('.ymrs_question').blur(function () {
+        var sum = 0;
+        $('.ymrs_question').each(function() {
+            sum += Number($(this).val());
+        });
+        $('#ymrs_total').val(sum);
+    });
+    </script>
+    <script>
+        $('.pansspos_question').blur(function () {
+        var sum = 0;
+        $('.pansspos_question').each(function() {
+            sum += Number($(this).val());
+        });
+        $('#pansspos_total').val(sum);
+    });
+    </script>
+    <script>
+        $('.panssneg_question').blur(function () {
+        var sum = 0;
+        $('.panssneg_question').each(function() {
+            sum += Number($(this).val());
+        });
+        $('#pansspos_total').val(sum);
+    });
+    </script>
+    <script>
+        $('.panssgen_question').blur(function () {
+        var sum = 0;
+        $('.panssgen_question').each(function() {
+            sum += Number($(this).val());
+        });
+        $('#panssgen_total').val(sum);
+    });
+    </script>
+{{/section}}
+
+
 <h2>Nuevo informe</h2>
-<h3>{{date}}</h3>
+
+{{!-- Fecha del nuevo informe--}}
+<fieldset class="form-group">
+    <label for="date">Selección de fecha</label>
+    <input type="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+    <small class="text-muted">
+        Seleccione una fecha para los informes
+    </small>
+</fieldset>
+
 <div class="btn-group btn-group-justified" role="group">
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
@@ -29,25 +87,457 @@
 </div>
 <form method="post">
     <div class="tab-content">
-        <div id="eeag" class="tab-pane" role="tabpanel" aria-expanded="false">
-            <h4>EEAG</h4>
-            <p>Introducir puntuación EEAG </p>
-            <input type="number" min="0" max="100">
+        <div id="eeag" class="tab-pane active" role="tabpanel" aria-expanded="true">
+            <div class="col-md-6 col-xs-6">
+                <h3>Escala de evaluación de la actividad global</h3>
+                <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente (0-100).</small>
+                <input type="number" min="0" max="100">
+            </div>
         </div>
         <div id="hdrs" class="tab-pane" role="tabpanel" aria-expanded="false">
-            <h4>HDRS</h4>
+            <div class="col-md-6 col-xs-6">
+                <h3>Escala para la depresión de Hamilton</h3>
+                <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente  (0-52).</small>
+                <fieldset class="form-group">
+                    <label>Humor depresivo <a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_deprMood" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Sentimientos de culpa<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label >Suicidio<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Insomnio precoz<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Insomnio intermedio<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Insomnio tardío<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Trabajo y actividades<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Inhibición psicomotora<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Agitación psicomotora<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Ansiedad psíquica<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Ansiedad somática<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Síntomas somáticos gastrointestinales<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Síntomas somáticos generales<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Síntomas genitales<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Hipocondría<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="3">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Pérdida de peso<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Conciencia de enfermedad<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
+                    <input class="form-control hdrs_question" type="number" min="0" max="3">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Resultado total</label>
+                    <input id="hdrs_total" class="form-control" readonly>
+                </fieldset>
+            </div>
+            {{!-- HDRS questions help --}}
+            <div class="col-md-5 col-xs-4">
+                <div class="affix-top" data-spy="affix" data-offset-top="275">
+                        <h3>Ayuda</h3>
+                        <small class="text-muted">Si necesita ayuda, pulse sobre el icono de información de cada campo. La ayuda se mostrará aquí.</small>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="hdrshelp_deprMood">
+                            <h4>Humor depresivo (tristeza, desesperanza, desamparo, sentimiento de inutilidad)</h4>
+                                0 : Ausente. <br>
+                                1 : Estas sensaciones las expresa solamente si le preguntan como se siente.<br>
+                                2 : Estas sensaciones las relata espontáneamente.<br>
+                                3 : Sensaciones no comunicadas verbalmente (expresión facial, postura, voz, tendencia al llanto)<br>
+                                4 : Manifiesta estas sensaciones en su comunicación verbal y no verbal en forma
+                            espontánea. 
+                        </div>
+                        <div class="tab-pane" id="hdrshelp_feelGuilty">
+                            <h4>Sentimientos de culpa</h4>
+                                0 : Ausente. <br>
+                                1 : Se culpa a si mismo, cree haber decepcionado a la gente.<br>
+                                2 : Tiene ideas de culpabilidad o medita sobre errores pasados o malas acciones.<br>
+                                3 : Siente que la enfermedad actual es un castigo.<br>
+                                4 : Oye voces acusatorias o de denuncia y/o experimenta alucinaciones visuales de amenaza.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="ymrs" class="tab-pane" role="tabpanel" aria-expanded="false">
-            <h4>YMRS</h4>
+            <div class="col-md-6 col-xs-6">
+                <h3>Escala para la manía de Young</h3>
+                <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente  (0-60).</small>
+                <fieldset class="form-group">
+                    <label>Euforia <a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_elevMood" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Hiperactividad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Impulso sexual<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Sueño<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Irritabilidad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Expresión verbal<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Trastornos del curso del pensamiento<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Trastornos formales del pensamiento<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Agresividad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Apariencia<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Conciencia de enfermedad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
+                    <input class="form-control ymrs_question" type="number" min="0" max="4">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Resultado total</label>
+                    <input id="ymrs_total" class="form-control" readonly>
+                </fieldset>
+            </div>
+            {{!-- YMRS questions help --}}
+            <div class="col-md-5 col-xs-4">
+                <div class="affix-top" data-spy="affix" data-offset-top="275">
+                        <h3>Ayuda</h3>
+                        <small class="text-muted">Si necesita ayuda, pulse sobre el icono de información de cada campo. La ayuda se mostrará aquí.</small>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="ymrshelp_elevMood">
+                            <h4>Euforia</h4>
+                                0 : Ausente. <br>
+                                1 : Posible o moderada, sólo cuando se le pregunta.<br>
+                                2 : Clara aunque subjetiva y apropiada al contenido: optimista, seguro de sí mismo/a, alegre.<br>
+                                3 : Elevada e inapropiada.<br>
+                                4 : Grave y desorganizada.
+                        </div>
+                        <div class="tab-pane" id="ymrshelp_incrActEner">
+                            <h4>Hiperactividad</h4>
+                                0 : Ausente. <br>
+                                1 : Subjetivamente aumentada.<br>
+                                2 : Vigoroso/a, hipergestual.<br>
+                                3 : Energía excesiva, hiperactividad uctuante, inquietud.<br>
+                                4 : Agitación o hiperactividad constante.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="panss_pos" class="tab-pane" role="tabpanel" aria-expanded="false">
-            <h4>PANSS escala positiva</h4>
+             <div class="col-md-6 col-xs-6">
+                <h3>PANSS positiva</h3>
+                <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente  (7-49).</small>
+                <fieldset class="form-group">
+                    <label>Delirios<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_delsus" data-toggle="tab"></a></label>
+                    <input class="form-control pansspos_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Desorganización conceptual<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
+                    <input class="form-control pansspos_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Conducta alucinatoria<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
+                    <input class="form-control pansspos_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Excitación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
+                    <input class="form-control pansspos_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Grandiosidad<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
+                    <input class="form-control pansspos_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Suspicacia/perjuicio<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
+                    <input class="form-control pansspos_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Hostilidad<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
+                    <input class="form-control pansspos_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Resultado total</label>
+                    <input id="pansspos_total" class="form-control" readonly>
+                </fieldset>
+            </div>
+            {{!-- Positive PANSS questions help --}}
+            <div class="col-md-5 col-xs-4">
+                <h3>Ayuda</h3>
+                <small class="text-muted">Si necesita ayuda, pulse sobre el icono de información de cada campo. La ayuda se mostrará aquí.</small>
+                <div class="tab-content">
+                    <div class="tab-pane" id="panssposhelp_delsus">
+                        <h4>Delirios</h4>
+                            <small class="text-muted"> Creencias infundadas, irreales e idiosincrásicas. <br>
+                                Bases para la valoración: Los pensamientos expresados en la entrevista y su influencia en las relaciones sociales y en la conducta.
+                            </small><br>
+                            1 : Ausente: No aplicable. <br>
+                            2 : Mínimo: Patología dudosa, puede estar en el extremo superior de los límites normales. 
+                            <br>
+                            3 : Leve: Presencia de uno o dos delirios vagos, sin cristalizar y que no se mantienen tenazmente. Los delirios no inter eren con el pensamiento, las relaciones sociales o la conducta. 
+                            <br>
+                            4 : Moderado: Presencia de un conjunto caleidoscópico de delirios inestables escasamente formados e inestables, o bien de unos pocos delirios bien formados que ocasionalmente interfieren con el pensamiento, las relaciones sociales o la conducta. 
+                            <br>
+                            5 : Moderadamente grave: Presencia de numerosos delirios bien formados que se mantiene tenazmente y que ocasionalmente inter eren con el pensamiento, las relaciones sociales o la conducta. 
+                            <br>
+                            6 : Grave: Presencia de un conjunto estable de delirios cristalizados, posiblemente sistematizados,tenazmente mantenidos y que inter eren claramente con el pensamiento, las relaciones sociales y la conducta. 
+                            <br>
+                            7 : Extremo: Presencia de un conjunto estable de delirios que están altamente sistematizados o sonmuy numerosos, y que dominan facetas principales de la vida del paciente. Frecuentemente, esto tiene como resultado acciones inadecuadas e irresponsables, que pueden incluso poner en peligro la vida del paciente o la de otros.
+                    </div>
+                    <div class="tab-pane" id="panssposhelp_concepDisor">
+                        <h4>Desorganización conceptual</h4>
+                            <small class="text-muted"> Proceso desorganizado de pensamiento caracterizado por la perturbación de las secuencias orientadas hacia la consecución de objetivos, por ejemplo, circunstancialidad, tangencialidad, asociaciones vagas, inconstancias, notable falta de lógica o bloqueo del pensamiento. <br>
+                                Los procesos cognitivo-verbales observados durante la entrevista.
+                            </small><br>
+                            1 : Ausente: No aplicable. <br>
+                            2 : Mínimo: Patología dudosa, puede estar en el extremo superior de los límites normales. 
+                            <br>
+                            3 : Leve:  El pensamiento es circunstancial, tangencial o paralógico. Existen algunas dificultades para dirigir el pensamiento hacia un objetivo, y puede manifestarse, bajo situaciones de presión, una cierta debilitación de las asociaciones. 
+                            <br>
+                            4 : Moderado: Es capaz de concretar pensamientos cuando las comunicaciones son breves yestructuradas, pero pasa a ser vago o incoherente al afrontar comunicaciones más complejas o ensituaciones de una mínima presión. 
+                            <br>
+                            5 : Moderadamente grave: Generalmente tiene dificultades para organizar los pensamientos,como se pone de mani esto en frecuentes incoherencias, inconsistencias o debilitación de lasasociaciones incluso en ausencia de presión.
+                            <br>
+                            6 : Grave: El pensamiento está seriamente desviado y es internamente inconsistente, lo que producegrandes incoherencias y perturbación de los procesos de pensamiento, fenómenos que aparecencasi constantemente. 
+                            <br>
+                            7 : Extremo: Los pensamientos están perturbados hasta el punto de que el paciente resultaincoherente. Existe una notable debilitación de las asociaciones, cosa que origina una total imposibilidad de comunicación, por ejemplo, la ‘ensalada de palabras” o el mutismo.
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="panss_neg" class="tab-pane" role="tabpanel" aria-expanded="false">
-            <h4>PANSS escala negativa</h4>
+            <div class="col-md-6 col-xs-6">
+                <h3>PANSS negativa</h3>
+                <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente (7-49).</small>
+                <fieldset class="form-group">
+                    <label>Embotamiento afectivo<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
+                    <input class="form-control panssneg_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Retracción emocional<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_emotWithd" data-toggle="tab"></a></label>
+                    <input class="form-control panssneg_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Pobre relación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
+                    <input class="form-control panssneg_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Retracción social/apatía pasiva<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
+                    <input class="form-control panssneg_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Dificultad de pensamiento abstracto<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
+                    <input class="form-control panssneg_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Falta de espontaneidad y fluidez en la conversación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
+                    <input class="form-control panssneg_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Pensamiento estereotipado<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
+                    <input class="form-control panssneg_question" type="number" min="1" max="7">
+                </fieldset>
+                fieldset class="form-group">
+                    <label>Resultado total</label>
+                    <input id="panssneg_total" class="form-control" readonly>
+                </fieldset>
+            </div>
+            {{!-- Negative PANSS questions help --}}
+            <div class="col-md-5 col-xs-4">
+                <h3>Ayuda</h3>
+                <small class="text-muted">Si necesita ayuda, pulse sobre el icono de información de cada campo. La ayuda se mostrará aquí.</small>
+                <div class="tab-content">
+                    <div class="tab-pane" id="panssneghelp_blunAffec">
+                        <h4>Embotamiento afectivo</h4>
+                            <small class="text-muted"> Responsabilidad emocional disminuida caracterizada por una reducción en la expresión facial, en la modulación de emociones, y gestos de comunicación. <br>
+                                Bases para la valoración: Observaciones de las manifestaciones físicas del tono afectivo y de la respuesta emocional durante el curso de la entrevista.
+                            </small><br>
+                            1 : Ausente: No aplicable. <br>
+                            2 : Mínimo: Patología dudosa, puede estar en el extremo superior de los límites normales. 
+                            <br>Los cambios en la expresión facial y en los gestos de comunicación parecen ser rígidos, forzados, artificiales, o faltos de modulación.
+                            <br>
+                            4 : Moderado: Rango disminuido de expresión facial y unos pocos gestos expresivos que resultan enuna apariencia apagada.
+                            <br>
+                            5 : Moderadamente grave: El afecto es generalmente “apático” con cambios sólo ocasionalmenteen la expresión facial y una infrecuencia de los gestos de comunicación. 
+                            <br>
+                            6 : Grave: Marcada apatía y dé cit emocional presente la mayor parte del tiempo. Pueden existirdescargas afectivas extremas no moduladas, tales como excitación, rabia, o risas inapropiadas e incontroladas.
+                            <br>
+                            7 : Extremo: Virtualmente ausentes los cambios de expresión facial o evidencia de gestos comunicativos. El paciente parece presentar constantemente una expresión impávida o de “madera”.
+                    </div>
+                    <div class="tab-pane" id="panssneghelp_emotWithd">
+                        <h4>Retracción emocional</h4>
+                            <small class="text-muted"> Falta de interés, participación, o preocupación afectiva en los hechos cotidianos.<br>
+                                Bases para la valoración:
+                                Informe por parte de los trabajadores sociales o de las familias sobre el funcionamiento del paciente y la observación del comportamiento interpersonal durante el curso de la entrevista.
+                            </small><br>
+                            1 : Ausente: No aplicable. <br>
+                            2 : Mínimo: Patología dudosa, puede estar en el extremo superior de los límites normales. 
+                            <br>
+                            3 : Leve:  Habitualmente le falta iniciativa y ocasionalmente puede mostrar un interés decreciente enlos hechos que le rodean.
+                            <br>
+                            4 : Moderado: El paciente está generalmente emocionalmente distante de su entorno y de suscompetencias, pero con motivación, puede ser incorporado al entorno.
+                            <br>
+                            5 : Moderadamente grave: El paciente s está claramente alejado emocionalmente de las personas yde los sucesos a su alrededor, resistiendo cualquier esfuerzo de participación. El paciente aparece distante, dócil y sin propósito pero puede ser involucrado en la comunicación, al menos de forma breve, y tiende a preocuparse de su persona, algunas veces con ayuda.
+                            <br>
+                            6 : Grave: Marcado déficit de interés y de compromisos emocionales que resultan en una conversación limitada con los demás, y negligencia frecuente de sus funciones personales, para lo cual el paciente necesita supervisión.
+                            <br>
+                            7 : Extremo: Paciente casi totalmente aislado, incomunicativo, y no presta atención a sus necesidades personales como resultado de una profunda falta de interés y compromiso emocional.
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="panss_gen" class="tab-pane" role="tabpanel" aria-expanded="false">
-            <h4>PANSS escala general</h4>
+            <div class="col-md-6 col-xs-6">
+                <h3>PANSS general</h3>
+                <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente (16-112).</small>
+                <fieldset class="form-group">
+                    <label>Preocupaciones somáticas<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Ansiedad<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Sentimientos de culpa<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Tensión motora<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Manierismo y posturas<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Depresión<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Retardo motor<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Falta de colaboración<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Contenidos inusuales del pensamiento<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Desorientación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Atención deficiente<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Ausencia de juicio e introspección<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Trastornos de la volición<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Control deficiente de impulsos<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Preocupació<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Evitación social activa<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
+                    <input class="form-control panssgen_question" type="number" min="1" max="7">
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>Resultado total</label>
+                    <input id="panssgen_total" class="form-control" readonly>
+                </fieldset>
+            </div>
+            {{!-- General PANSS questions help --}}
+            <div class="col-md-5 col-xs-4">
+                <h3>Ayuda</h3>
+                <small class="text-muted">Si necesita ayuda, pulse sobre el icono de información de cada campo. La ayuda se mostrará aquí.</small>
+                <div class="tab-content">
+                    <div class="tab-pane" id="panssgenhelp_somaConcer">
+                        <h4>Preocupaciones somáticas</h4>
+                            <small class="text-muted"> Quejas físicas o creencias acerca de enfermedades o disfunciones somáticas. Estas quejas pueden variar desde un vago sentido de malestar a claros delirios de enfermedad física maligna <br>
+                                Bases para la valoración: Contenido del pensamiento expresado en la entrevista.
+                            </small><br>
+                            1 : Ausente: No aplicable. <br>
+                            2 : Mínimo: Patología dudosa, puede estar en el extremo superior de los límites normales. 
+                            <br>
+                            3 : Leve: Preocupaciones a cerca de la salud o sobre problemas somáticos, tal y como se evidencia por preguntas ocasionales y por demandas de tranquilización.
+                            <br>
+                            4 : Moderado: Quejas a cerca de mala salud o de disfunción corporal, pero no hay convicción delirante, y las preocupaciones pueden ser aliviadas mediante tranquilización.
+                            <br>
+                            5 : Moderadamente grave: El paciente expresa numerosas o frecuentemente preocupaciones a cerca depresentar una enfermedad física o de disfunción corporal, o bien el paciente manifiesta uno o dos claros delirios sobre estos temas, pero sin estar preocupado por ello. 
+                            <br>
+                            6 : Grave: El paciente manifiesta uno o más delirios somáticos pero no está muy implicadoefectivamente en ellos, y con algún esfuerzo, el entrevistador puede desviar la atención del paciente sobre estos temas. 
+                            <br>
+                            7 : Extremo: Numerosos y frecuentemente referidos delirios somáticos, o sólo algún delirio somáticopero de naturaleza catastró ca que domina totalmente el afecto y pensamiento del paciente.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <a class="btn btn-primary">Bleee</a>
 </form>

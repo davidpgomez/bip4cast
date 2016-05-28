@@ -6,12 +6,18 @@
       var patid = button.data('patid'); // Extract info from the patient id
       if(act == "edit"){
           // the form action is set to be the one which edits an existing prescription
-          var drugtype = button.data('type');
           var presid = button.data('pid'); 
-          var name = button.data('name');
           $(this).find('.modal-title').text('Editar receta');
           $(this).find('.modal-body form').attr('action', '/tracing/process/?form=editprescriptions&patid='+patid+'&id='+ presid);
-          $("select#type").find("option#"+drugtype).attr('selected', true);
+          // Set values
+          $(this).find('.modal-body input#name').val(button.data('name'));
+          $(this).find('.modal-body select#type').val(button.data('dtype'));
+          $(this).find('.modal-body input#dose').val(button.data('dose'));
+          $(this).find('.modal-body input#time').val( button.data('time'));
+          $(this).find('.modal-body input#begindate').val(button.data('dstart'));
+          $(this).find('.modal-body input#enddate').val(button.data('dend'));
+          $(this).find('.modal-body input#ptitle').val(button.data('title'));
+          $(this).find('.modal-body input#ptext').val(button.data('text'));
       }
         else if(act == "add"){
             $(this).find('.modal-title').text('Añadir receta');
@@ -41,7 +47,7 @@
                     <fieldset class="form-group">
                         <label for="drug" class="col-sm-3 control-label">Medicamento</label>
                         <div class="col-sm-6">
-                            <input type="text" name="name" class="col-sm-9 form-control" required>
+                            <input type="text" id="name" name="name" class="col-sm-9 form-control" required>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -60,13 +66,13 @@
                     <fieldset class="form-group">
                         <label for="dose" class="col-sm-3 control-label">Dosis</label>
                         <div class="col-sm-6">
-                            <input type="number" name="dose" class="form-control">
+                            <input type="number" id="dose" name="dose" class="form-control">
                         </div>
                     </fieldset>
                     <fieldset class="form-group" >
                         <label for="time" class="col-sm-3 control-label">Hora</label>
                         <div class="col-sm-6">
-                            <input type="text" name="time" class="form-control">
+                            <input type="text" id="time" name="time" class="form-control">
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -84,13 +90,13 @@
                     <fieldset class="form-group">
                         <label for="title" class="col-sm-3 control-label">Título</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="title" name="title">
+                            <input type="text" class="form-control" id="ptitle" name="title">
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
                         <label for="text" class="col-sm-3 control-label">Texto</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="text" name="text">
+                            <input type="text" class="form-control" id="ptext" name="text">
                         </div>
                     </fieldset>
                 </div>
@@ -130,7 +136,7 @@
 <form action="/tracing/process?form=updateprescriptions&id={{pat_id}}" method="post"> 
     <fieldset class="form-group">
         <label for="date">Filtrar por fecha</label>
-            <input type="date" class="form-control" id="date" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+            <input type="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
             <small class="text-muted">
                 Muestra las recetas que estaban activas en la fecha seleccionada.
             </small>
@@ -162,7 +168,7 @@
                     <td> {{time}} </td>
                     <td> {{dose}} </td>
                     <td> 
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingPres" data-pid="{{presid}}" data-patid="{{../pat_id}}" data-name="{{name}}" data-type="{{type}}" data-time="{{time}}" data-dose="{{dose}}"> <span class="glyphicon glyphicon-edit"></span> </button>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingPres" data-pid="{{presid}}" data-patid="{{../pat_id}}" data-name="{{name}}" data-time="{{time}}" data-dose="{{dose}}" data-dtype="{{type}}" data-dstart="{{raw.dateStart}}" data-dend="{{raw.dateEnd}}" data-title="{{title}}" data-text="{{text}}"> <span class="glyphicon glyphicon-edit"></span> </button>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removPres" data-pid="{{presid}}" data-patid="{{../pat_id}}"> <span class="glyphicon glyphicon-remove"></span></button>
                     </td>
                 </tr>

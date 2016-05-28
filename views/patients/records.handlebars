@@ -15,9 +15,11 @@
             </div>
             <form method="post" action="/tracing/process?form=newrecord&id={{pat_id}}">
                 <div class="modal-body">
-                    <a href="/patient-info/{{pat_id}}/newtest/newhrds" class="btn btn-primary">HDRS</a>
-                    <a href="/patient-info/{{pat_id}}/newtest/newymrs" class="btn btn-primary">YMRS</a>
-                    <a href="/patient-info/{{pat_id}}/newtest/newpanss" class="btn btn-primary">PANSS</a>
+                    Nuevos test para hoy: {{today}}<br>
+                    <a href="/patient-info/{{pat_id}}/records/newtest/eeag" class="btn btn-primary">EEAG</a>
+                    <a href="/patient-info/{{pat_id}}/records/newtest/hrds" class="btn btn-primary">HDRS</a>
+                    <a href="/patient-info/{{pat_id}}/records/newtest/ymrs" class="btn btn-primary">YMRS</a>
+                    <a href="/patient-info/{{pat_id}}/records/newtest/panss" class="btn btn-primary">PANSS</a>
                 </div>
             </form>
         </div>
@@ -32,7 +34,7 @@
     <input type="submit" class="btn btn-primary" value="Obtener informes">
 </form>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addnewrecord"> <span class="glyphicon glyphicon-plus"></span> Añadir test </button></td>
+<a href="/patient-info/{{pat_id}}/records/newtest" class="btn btn-primary"> <span class="glyphicon glyphicon-plus"></span> Añadir test </a>
 
 <h2>Resultados de {{record.date}}</h2>
 <div class="btn-group btn-group-justified" role="group">
