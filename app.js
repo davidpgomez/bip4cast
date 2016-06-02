@@ -240,9 +240,69 @@ app.post('/tracing/process', function(req, res){
         });       
     }
     else if(form == 'newrecord'){
-        var pat_id = req.query.id;
-        var date = tools.toDate(req.body.date).toISOString();
-        res.redirect(303,'/patient-info/'+pat_id+'/records/newrecord/'+date);
+        var pat_id = req.query.patid;
+        // process form data
+        var date = tools.toDate(req.body.date);
+        console.log(date);
+        // parsing test
+        var eeag, hdrs, ymrs, panss_pos, panss_neg, panss_gen;
+        if(req.body.valideeag == 'on'){
+            // parse eeag
+            console.log("EEAG valid test.");
+            eeag = parseInt(req.body.eeag);
+        }
+        
+        if (req.body.validhdrs == 'on'){
+            //parse hdrs
+            console.log("HDRS valid test.");
+            hdrs = tools.parseHdrs(req.body);
+        }
+        
+        if (req.body.validymrs == 'on'){
+            // parse ymrs
+            console.log("YMRS valid test.");
+            ymrs = tools.parseYmrs(req.body);
+        }
+        if (req.body.validpansspos == 'on'){
+            console.log("Positive PANSS valid test.");
+            panss_pos = tools.parsePanssPos(body);
+        }
+        if (req.body.validpanssneg == 'on'){
+            console.log("Negative PANSS valid test.");
+            panss_pos = tools.parsePanssNeg(body);
+        }
+        if (req.body.validpanssgen == 'on'){
+            console.log("General PANSS valid test.");
+            panss_pos = tools.parsePanssGen(body);
+        }
+        
+        new records({
+            user_id : pat_id,
+            date : date,
+            eeag : eeag,
+            hdrs : hdrs,
+            ymrs : ymrs,
+            panss : {
+                panss_pos : panss_pos,
+                panss_neg : panss_neg,
+                panss_gen : panss_gen
+            }
+        }).save(function(err){
+            if(err){
+                console.error(err);
+                res.redirect(500, '/index');
+            }
+            if(req.xhr) 
+                return res.json({ success: true});
+            console.log('Prescription added.')
+            req.session.flash = {
+                type : 'success',
+                intro : 'Test añadidos',
+                message : 'Se ha añadido los test a la base de datos'
+        };
+        
+            res.redirect(303, '/patient-info/'+pat_id+'/records');
+        });
     }
 });
 
@@ -422,11 +482,12 @@ app.get('/patient-info/:pat_id/prescriptions', function(req, res){
 
 app.get('/patient-info/:pat_id/records', function(req, res){
     var pat_id = req.params.pat_id;
-    records.findOne({patientId : pat_id}, function(err, results){
+    records.findOne({user_id : pat_id}, function(err, results){
         if(err) console.error(err);
         console.log('Retrieving last records info from patient: ' + pat_id);
         //creating context and render result
         if(results == null){
+            console.log('No results found.');
             var context = {
                 pagetitle : 'Informes médicos',
                 patientview : true,
