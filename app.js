@@ -95,6 +95,7 @@ app.get('/index', function(req, res){
     res.render('index', context);
 });
 
+// patient search form
 app.get('/tracing', function(req, res){
     var context = {
     pagetitle : 'Seguimiento',
@@ -103,7 +104,99 @@ app.get('/tracing', function(req, res){
     res.render('tracing', context);
 });
 
-// searchpatient results page
+// patient sign-up form, form process and unregistration form
+app.get('/register', function(req, res){
+    var context = {
+        pagetitle : 'Alta paciente',
+        regiactive : true
+    };
+    res.render('register', context);
+});
+
+app.post('/register/process', function(req, res){
+    console.log('Form (from querystring): ' + req.query.form);
+    /*
+        TODO Typical db-related operations:
+        check if an entry exists before create a new one
+        edit an existing entry
+        ...
+    */
+    // adding info to DB
+   new phenotype({
+        email : req.body.email,
+        name : req.body.pac_name,
+        pin : Math.floor(Math.random() * 999999),
+        birthDate : tools.toDate(req.body.bday),
+        gender : tools.toBoolean(req.body.gender),
+        cohabitation : parseInt(req.body.cohabitation),
+        diagnosis : req.body.diag,
+        diagnosisAge : req.body.diagAge,
+        senLit : tools.toBoolean(req.body.litsens),
+        senVal : tools.toBoolean(req.body.valsens),
+        senCar : tools.toBoolean(req.body.carsens),
+        seasonality : tools.toBoolean(req.body.season),
+        maniaCrises : parseInt(req.body.mancrisis),
+        mixedCrises : parseInt(req.body.mixcrisis),
+        freePeriod : parseInt(req.body.freeper),
+        psycSymp : tools.toBoolean(req.body.psychs),
+        others : req.body.others,
+    }).save(function(err){
+       if(req.xhr) 
+           return res.json({ success: true});
+        console.log('Patient added.')
+        req.session.flash = {
+            type : 'success',
+            intro : 'User added!',
+            message : 'The new patient has been added to the DB.'
+        };
+       return res.redirect(303, '/index');
+   }); 
+});
+
+app.get('/register/unregister/:pat_id', function(req, res){
+    var pat_id = req.params.pat_id;
+    phenotype.remove({_id : pat_id}, function(err){
+        if(err){
+            console.log('Error while trying to delete phenotype data from patient.');
+            req.session.flash = {
+                type : 'danger',
+                intro : 'Error',
+                message : 'Error while trying to delete phenotype data from patient.'
+            };
+        }
+        comments.remove({user_id : pat_id}, function(err){
+            if(err){
+                console.log('Error while trying to delete prescriptions or messages data from patient.');
+                req.session.flash = {
+                    type : 'danger',
+                    intro : 'Error',
+                    message : 'Error while trying to delete prescriptions or messages data from patient.'
+                };
+            }
+            records.remove({user_id : pat_id}, function(err){
+                if(err){
+                    console.log('Error while trying to delete medical test data from patient.');
+                    req.session.flash = {
+                        type : 'danger',
+                        intro : 'Error',
+                        message : 'Error while trying to delete medical test data from patient.'
+                    };
+                }
+                if(req.xhr)
+                    return res.json({ success : true});
+                console.log('Patient info totally deleted.');
+                req.session.flash = {
+                    type : 'success',
+                    intro : 'User deleted!',
+                    message : 'All patient data has been removed from the DB.'
+                };
+                return res.redirect(303, '/index');
+            });
+        });
+    });
+});
+
+// form processing
 app.post('/tracing/process', function(req, res){
     var form = req.query.form;
     if (form == 'patientsearch'){
@@ -164,7 +257,6 @@ app.post('/tracing/process', function(req, res){
         console.log('Updating prescription ' + pres_id);
         var begindate = tools.toDate(req.body.begindate);
         var enddate = tools.toDate(req.body.enddate);
-        console.log(req.body.dose);
         comments.update({_id : pres_id}, {
             dateStart : begindate,
             dateEnd : enddate,
@@ -275,8 +367,6 @@ app.post('/tracing/process', function(req, res){
             panss_gen = tools.parsePanssGen(req.body);
         }
         
-        console.log(panss_gen);
-        
         new records({
             user_id : pat_id,
             date : date,
@@ -337,8 +427,135 @@ app.post('/tracing/process', function(req, res){
             res.render('patients/records', context);
         });
     }
+    else if (form == 'addmessage'){
+        var pat_id = req.query.patid;
+        var begindate = tools.toDate(req.body.begindate);
+        var enddate = tools.toDate(req.body.enddate);
+        console.log('Adding message');
+        var now = new Date();
+        if(req.body.sendnow = 'on'){
+            console.log('Converting time...');
+            time = tools.toMinutes(now.getHours()+':'+now.getMinutes());
+        }
+        else{
+            time = tools.toMinutes(req.body.time);
+        }
+        new comments({
+            user_id : pat_id,
+            prescription : false,
+            dateStart : begindate,
+            dateEnd : enddate,
+            time : time,
+            text : req.body.text,
+        }).save(function(err){
+            if(err)
+                console.error(err);
+            if(req.xhr) 
+                return res.json({ success: true});
+            console.log('Message added.')
+            req.session.flash = {
+                type : 'success',
+                intro : 'Mensaje añadido',
+                message : 'Se ha añadido el mensaje a la base de datos'
+            };
+            res.redirect(303, '/patient-info/'+pat_id+'/communication');
+        });
+    }
+    else if (form == 'editmessages'){
+        var msgid = req.query.id;
+        var pat_id = req.query.patid;
+        console.log('Updating message ' + msgid);
+        var begindate = tools.toDate(req.body.begindate);
+        var enddate = tools.toDate(req.body.enddate);
+        comments.update({_id : pres_id}, {
+            dateStart : begindate,
+            dateEnd : enddate,
+            time : tools.toMinutes(req.body.time),
+            name : req.body.name,
+            type : req.body.type,
+            title : req.body.title,
+            text : req.body.text,
+            dose : parseInt(req.body.dose),
+        }, function(err, result){
+            if (err)
+                console.error(err);
+            if(req.xhr)
+                return res.json({ success : true });
+            console.log('Prescription edited.');
+            req.session.flash = {
+                type : 'success',
+                intro : 'Receta editada',
+                message : 'La receta ha sido editada satisfactoriamente'
+            };
+            res.redirect(303,'/patient-info/'+pat_id+'/prescriptions');
+        });
+    }
+    else if (form == 'deletemessage'){
+        var pat_id = req.query.patid;
+        var msgid = req.query.id;
+        console.log('Deleting message.');
+        comments.remove({_id : msgid}, function(err){
+            if(err)
+                console.error(err);
+            if(req.xhr) 
+                return res.json({ success : true });
+            req.session.flash = {
+                type : 'success',
+                intro : 'Mensaje eliminado',
+                message : 'Se ha eliminado el mensaje de la base de datos'
+        };
+            res.redirect(303, '/patient-info/'+pat_id+'/communication');
+        }); 
+    }
+    else if (form == 'updatemessages'){
+        var pat_id = req.query.id;
+        console.log('Date: ' + req.body.date);
+        var date = tools.toDate(req.body.date).toISOString();
+        comments.find({user_id : pat_id, prescription : false, dateStart : {$lte : date}, $or : 
+                       [{dateEnd : { $gte : date}}, {dateEnd : null}]}, function(err, results){
+            console.log('Quering active messages of patient ' + pat_id + ' in ' + date);
+            if(results == null){
+                console.log('No results found.');
+                var context = {
+                    pagetitle : 'Comunicación',
+                    patientview : true,
+                    tracactive : true,
+                    commactive : true,
+                    pat_id : pat_id,
+                };
+                res.render('patients/communication', context);
+            }
+            else{
+                console.log('Results found: ' + results.length);
+                var context = {
+                    pagetitle : 'Comunicación',
+                    patientview : true,
+                    tracactive : true,
+                    commactive : true,
+                    pat_id : pat_id,
+                    comm_list : results.map(function(comments){
+                        return {
+                            msgid : comments._id,
+                            dateStart : tools.parseDate(comments.dateStart),
+                            dateEnd : tools.parseDate(comments.dateEnd),
+                            time : tools.parseMinutes(comments.time),
+                            text : comments.text,
+                            sched : tools.parseBoolean(comments.dateEnd==null?true:false),
+                            raw : {
+                                dateStart : tools.toRawDate(comments.dateStart),
+                                dateEnd : tools.toRawDate(comments.dateEnd),
+                                sched : comments.dateEnd==null?false:true
+                            }
+                        }
+                    })
+                };
+                res.render('patients/communication', context);
+            }
+        });
+    }
 });
 
+// patient info 
 app.get('/patient-info/:pat_id/main', function(req, res){
     var pat_id = req.params.pat_id; // obtain pat_id from url
     console.log('Showing information about patient: ' + pat_id);
@@ -386,100 +603,9 @@ app.get('/patient-info/:pat_id/main', function(req, res){
     });
 });
 
-app.get('/register', function(req, res){
-    var context = {
-        pagetitle : 'Alta paciente',
-        regiactive : true
-    };
-    res.render('register', context);
-});
-
-app.post('/register/process', function(req, res){
-    console.log('Form (from querystring): ' + req.query.form);
-    /*
-        TODO Typical db-related operations:
-        check if an entry exists before create a new one
-        edit an existing entry
-        ...
-    */
-    // adding info to DB
-   new phenotype({
-        email : req.body.email,
-        name : req.body.pac_name,
-        pin : Math.floor(Math.random() * 999999),
-        birthDate : tools.toDate(req.body.bday),
-        gender : tools.toBoolean(req.body.gender),
-        cohabitation : parseInt(req.body.cohabitation),
-        diagnosis : req.body.diag,
-        diagnosisAge : req.body.diagAge,
-        senLit : tools.toBoolean(req.body.litsens),
-        senVal : tools.toBoolean(req.body.valsens),
-        senCar : tools.toBoolean(req.body.carsens),
-        seasonality : tools.toBoolean(req.body.season),
-        maniaCrises : parseInt(req.body.mancrisis),
-        mixedCrises : parseInt(req.body.mixcrisis),
-        freePeriod : parseInt(req.body.freeper),
-        psycSymp : tools.toBoolean(req.body.psychs),
-        others : req.body.others,
-    }).save(function(err){
-       if(req.xhr) 
-           return res.json({ success: true});
-        console.log('Patient added.')
-        req.session.flash = {
-            type : 'success',
-            intro : 'User added!',
-            message : 'The new patient has been added to the DB.'
-        };
-       return res.redirect(303, '/index');
-   }); 
-});
-
-app.get('/register/unregister/:pat_id', function(req, res){
-    var pat_id = req.params.pat_id;
-    phenotype.remove({_id : pat_id}, function(err){
-        if(err){
-            console.log('Error while trying to delete phenotype data from patient.');
-            req.session.flash = {
-                type : 'danger',
-                intro : 'Error',
-                message : 'Error while trying to delete phenotype data from patient.'
-            };
-        }
-        comments.remove({user_id : pat_id}, function(err){
-            if(err){
-                console.log('Error while trying to delete prescriptions or messages data from patient.');
-                req.session.flash = {
-                    type : 'danger',
-                    intro : 'Error',
-                    message : 'Error while trying to delete prescriptions or messages data from patient.'
-                };
-            }
-            records.remove({user_id : pat_id}, function(err){
-                if(err){
-                    console.log('Error while trying to delete medical test data from patient.');
-                    req.session.flash = {
-                        type : 'danger',
-                        intro : 'Error',
-                        message : 'Error while trying to delete medical test data from patient.'
-                    };
-                }
-                if(req.xhr)
-                    return res.json({ success : true});
-                console.log('Patient info totally deleted.');
-                req.session.flash = {
-                    type : 'success',
-                    intro : 'User deleted!',
-                    message : 'All patient data has been removed from the DB.'
-                };
-                return res.redirect(303, '/index');
-            });
-        });
-    });
-});
-
 app.get('/patient-info/:pat_id/prescriptions', function(req, res){
     var pat_id = req.params.pat_id; // obtain pat_id from url
-    comments.find({ user_id : pat_id}, function(err, results){
+    comments.find({ user_id : pat_id, prescription : true}, function(err, results){
         if(err) console.error(err);
         console.log('Retrieving comments info from patient ' + pat_id);
         console.log('Number of results found: ' + results.length); 
@@ -568,6 +694,39 @@ app.get('/patient-info/:pat_id/records/newtest', function(req, res){
         pat_id : req.params.pat_id,
     }
     res.render('patients/newrecord', context);
+});
+
+app.get('/patient-info/:pat_id/communication', function(req, res){
+    var pat_id = req.params.pat_id;
+    comments.find({ user_id : pat_id, prescription : false}, function(err, results){
+        if(err) console.error(err);
+        console.log('Retrieving comments info from patient ' + pat_id);
+        console.log('Number of results found: ' + results.length); 
+        // creating context
+        var context = {
+            pagetitle : 'Comunicación',
+            patientview : true,
+            tracactive : true,
+            commactive : true,
+            pat_id : pat_id,
+            comm_list : results.map(function(comments){
+                return {
+                    msgid : comments._id,
+                    dateStart : tools.parseDate(comments.dateStart),
+                    dateEnd : tools.parseDate(comments.dateEnd),
+                    time : tools.parseMinutes(comments.time),
+                    text : comments.text,
+                    sched : tools.parseBoolean(comments.dateEnd==null?true:false),
+                    raw : {
+                        dateStart : tools.toRawDate(comments.dateStart),
+                        dateEnd : tools.toRawDate(comments.dateEnd),
+                        sched : comments.dateEnd==null?false:true
+                    }
+                }
+            })
+        };
+        res.render('patients/communication', context);
+    });
 });
 
 // error handlers

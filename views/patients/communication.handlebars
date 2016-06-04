@@ -1,0 +1,162 @@
+{{#section 'jquery'}}
+    <script>
+    $('#editingComm').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Button that triggered the modal
+      var act = button.data('action');
+      var patid = button.data('patid'); // Extract info from the patient id
+      if(act == "edit"){
+          // the form action is set to be the one which edits an existing prescription
+          var msgid = button.data('mid'); 
+          $(this).find('.modal-title').text('Editar mensaje');
+          $(this).find('.modal-body form').attr('action', '/tracing/process/?form=editmessages&patid='+patid+'&id='+ msgid);
+          // Set values
+          $(this).find('.modal-body input#begindate').val(button.data('dstart'));
+          $(this).find('.modal-body input#enddate').val(button.data('dend'));
+          $(this).find('.modal-body input#time').val(button.data('time'));
+          $(this).find('.modal-body input#ptext').val(button.data('text'));
+          if(button.data('sched')){
+              $(this).find('.modal-body input#enddate').prop('disabled', false);
+              $(this).find('.modal-body input#scheduled').prop('checked', true);
+          }
+          else{
+              $(this).find('.modal-body input#enddate').prop('disabled', true);
+              $(this).find('.modal-body input#scheduled').prop('checked', false);
+          }
+      }
+        else if(act == "add"){
+            $(this).find('.modal-title').text('Añadir mensaje');
+            $(this).find('.modal-body form').attr('action', '/tracing/process/?form=addmessage&patid='+patid);
+        }
+    });
+    
+    $('#removComm').on('show.bs.modal', function (event){
+        var button = $(event.relatedTarget);
+        var msgid = button.data('mid');
+        var patid = button.data('patid');
+        $(this).find('.modal-footer form').attr('action', '/tracing/process/?form=deletemessage&patid='+patid+'&id='+ msgid);
+    });
+    </script>
+{{/section}}
+
+{{!-- Editing message modal --}}
+<div id="editingComm" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <form name="edit" class="form-horizontal" role="form"  method="post" id="editPresFrom">
+                    <fieldset class="form-group">
+                        <label for="begindate" class="col-sm-3 control-label">Comienzo</label>
+                        <div class="col-sm-6">
+                            <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="enddate" class="col-sm-3 control-label">Final</label>
+                        <div class="col-sm-6">
+                            <input type="date" class="form-control" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" disabled>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="scheduled" class="col-sm-3 control-label"></label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" name="scheduled" id="scheduled" onChange="document.getElementById('enddate').disabled = !this.checked;"> Mensaje programado
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group" >
+                        <label for="time" class="col-sm-3 control-label">Hora</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="time" name="time" class="form-control">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="scheduled" class="col-sm-3 control-label"></label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" name="scheduled" id="scheduled" onChange="document.getElementById('time').disabled = this.checked;"> Enviar ahora
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="text" class="col-sm-3 control-label">Texto</label>
+                        <div class="col-sm-6">
+                            <textarea class="form-control" id="ptext" name="text"></textarea>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <p class="text-warning"><small>Si no se confirman los cambios, estos se perderán</small></p>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{!-- Deleting message modal --}}
+<div id="removComm" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Eliminar mensaje</h4>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea eliminar este mensaje?
+            </div>
+            <div class="modal-footer">
+                <p class="text-danger"><small>Este cambio no podrá deshacerse</small></p>
+                <form method="post">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="/tracing/process?form=updatemessages&id={{pat_id}}" method="post"> 
+    <fieldset class="form-group">
+        <label for="date">Filtrar por fecha</label>
+            <input type="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+            <small class="text-muted">
+                Muestra los mensajes que estaban activos en la fecha seleccionada.
+            </small>
+    </fieldset>
+    <input type="submit" class="btn btn-primary" value="Actualizar">
+</form>
+<br>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editingComm" data-action="add" data-patid="{{pat_id}}"> <span class="glyphicon glyphicon-plus"></span> Añadir nuevo </button></td>
+
+<br>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thread>
+            <tr>
+                <th> Inicio </th>
+                <th> Final </th>
+                <th> Hora </th>
+                <th> Programado </th>
+                <th> Texto </th>
+                <th> </th>
+            </tr>
+        </thread>
+        <tbody>
+            {{#each comm_list}}
+                <tr>
+                    <td> {{dateStart}}</td>
+                    <td> {{dateEnd}} </td>
+                    <td> {{time}} </td>
+                    <td> {{sched}} </td>
+                    <td> {{text}} </td>
+                    <td> 
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingComm" data-mid="{{msgid}}" data-patid="{{../pat_id}}" data-time="{{time}}" data-dstart="{{raw.dateStart}}" data-dend="{{raw.dateEnd}}" data-sched={{raw.sched}} data-text="{{text}}"> <span class="glyphicon glyphicon-edit"></span> </button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removComm" data-mid="{{msgid}}" data-patid="{{../pat_id}}"> <span class="glyphicon glyphicon-remove"></span></button>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
