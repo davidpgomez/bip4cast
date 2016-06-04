@@ -131,10 +131,9 @@ app.post('/tracing/process', function(req, res){
     }
     else if (form == 'updateprescriptions'){
         var pat_id = req.query.id;
-        console.log('Fecha: ' + req.body.date);
-        var date = tools.toDate(req.body.date);
-        
-        comments.find({user_id : pat_id, dateStart : {$gte : date}, dateEnd :{ $lte : date}}, function(err, results){
+        console.log('Date: ' + req.body.date);
+        var date = tools.toDate(req.body.date).toISOString();
+        comments.find({user_id : pat_id, dateStart : {$lte : date}, dateEnd :{ $gte : date}}, function(err, results){
             console.log('Quering active prescriptions of patient ' + pat_id + ' in ' + date);
             console.log('Results found: ' + results.length);
             var context = {
@@ -146,7 +145,7 @@ app.post('/tracing/process', function(req, res){
             comm_list : results.map(function(comments){
                 return {
                     name : comments.name,
-                    type : coments.type,
+                    type : comments.type,
                     dateStart : tools.parseDate(comments.dateStart),
                     dateEnd : tools.parseDate(comments.dateEnd),
                     time : tools.parseMinutes(comments.time),
@@ -239,7 +238,7 @@ app.post('/tracing/process', function(req, res){
             res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
         });       
     }
-    else if(form == 'newrecord'){
+    else if (form == 'newrecord'){
         var pat_id = req.query.patid;
         // process form data
         var date = tools.toDate(req.body.date);
@@ -265,16 +264,18 @@ app.post('/tracing/process', function(req, res){
         }
         if (req.body.validpansspos == 'on'){
             console.log("Positive PANSS valid test.");
-            panss_pos = tools.parsePanssPos(body);
+            panss_pos = tools.parsePanssPos(req.body);
         }
         if (req.body.validpanssneg == 'on'){
             console.log("Negative PANSS valid test.");
-            panss_pos = tools.parsePanssNeg(body);
+            panss_neg = tools.parsePanssNeg(req.body);
         }
         if (req.body.validpanssgen == 'on'){
             console.log("General PANSS valid test.");
-            panss_pos = tools.parsePanssGen(body);
+            panss_gen = tools.parsePanssGen(req.body);
         }
+        
+        console.log(panss_gen);
         
         new records({
             user_id : pat_id,
@@ -294,7 +295,7 @@ app.post('/tracing/process', function(req, res){
             }
             if(req.xhr) 
                 return res.json({ success: true});
-            console.log('Prescription added.')
+            console.log('Record added.')
             req.session.flash = {
                 type : 'success',
                 intro : 'Test añadidos',
@@ -302,6 +303,38 @@ app.post('/tracing/process', function(req, res){
         };
         
             res.redirect(303, '/patient-info/'+pat_id+'/records');
+        });
+    }
+    else if (form == 'updaterecords'){
+        var pat_id = req.query.id;
+        console.log('Date: ' + req.body.date);
+        var date = tools.toDate(req.body.date).toISOString();
+        records.find({user_id : pat_id, date :  date}, function(err, results){
+            console.log('Quering patient ' + pat_id + ' tests in ' + date);
+            console.log('Results found: ' + results.length);
+            var context = {
+                pagetitle : 'Informes médicos',
+                patientview : true,
+                tracactive : true,
+                recoactive : true,
+                pat_id : pat_id,
+                record : {
+                    date : tools.parseDate(results.date),
+                    eeag : results.eeag,
+                    hdrs : results.hdrs,
+                    hdrs_total : tools.parseRecord(results.hdrs, 'hdrs'),
+                    ymrs : results.ymrs,
+                    ymrs_total : tools.parseRecord(results.ymrs, 'ymrs'),
+                    panss_gen : results.panss.panss_gen,
+                    panss_gen_total : tools.parseRecord(results.panss.panss_gen, 'panss_gen'),
+                    panss_neg : results.panss.panss_neg,
+                    panss_neg_total : tools.parseRecord(results.panss.panss_neg, 'panss_neg'),
+                    panss_pos : results.panss.panss_pos,
+                    panss_pos_total : tools.parseRecord(results.panss.panss_pos, 'panss_pos'),
+                    panss_total : this.panss_gen_total + this.panss_pos_total + this.panss_neg_total
+                }
+            };
+            res.render('patients/records', context);
         });
     }
 });

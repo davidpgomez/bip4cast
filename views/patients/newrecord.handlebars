@@ -32,7 +32,7 @@
         $('.panssneg_question').each(function() {
             sum += Number($(this).val());
         });
-        $('#pansspos_total').val(sum);
+        $('#panssneg_total').val(sum);
     });
     </script>
     <script>
@@ -342,7 +342,7 @@
                         <input id="pansspos_total" class="form-control" readonly>
                     </fieldset>
                     <fieldset class="form-group">
-                        <input type="checkbox" id="validpansspos" id="validpansspos"> Datos válidos
+                        <input type="checkbox" id="validpansspos" name="validpansspos"> Datos válidos
                     </fieldset>
                     <a class="nav-link btn btn-secondary pull-right" aria-expanded="false" href="#panss_neg" role="tab" data-toggle="tab">PANSS negativa<span class="glyphicon glyphicon-chevron-right"></span></a>
                 </div>
@@ -408,7 +408,7 @@
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Retracción social/apatía pasiva<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
-                        <input name="passSocWithdr" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="passSocWithd" class="form-control panssneg_question" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Dificultad de pensamiento abstracto<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
@@ -506,7 +506,7 @@
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Retardo motor<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="motoRetard" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="motoRetar" class="form-control panssgen_question" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Falta de colaboración<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
