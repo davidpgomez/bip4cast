@@ -224,7 +224,8 @@ app.post('/tracing/process', function(req, res){
     if (form == 'patientsearch'){
         console.log('Form (from querystring): ' + req.query.form);
         console.log('Patient name (from visible form field): ' + req.body.pac_name);
-        phenotype.find({name : req.body.pac_name}, function(err, results){
+        var patientnameregex = new RegExp(req.body.pac_name, 'i');
+        phenotype.find({name : patientnameregex}, function(err, results){
             if(err) console.error(err);
             console.log('Number of results found: ' + results.length);
 
