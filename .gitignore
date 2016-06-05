@@ -4,6 +4,9 @@ bin*
 data*
 lib/readme
 
+#ignore log files
+logs*
+
 # bootstrap files
 public/bootstrap*
 
@@ -14,9 +17,7 @@ public/bootstrap*
 
 # crediantial
 credentials.js
-
-# don't commit log files
-log
+user.sysadmin
 
 # ignore uploaded data
 data

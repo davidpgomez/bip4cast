@@ -1,10 +1,20 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('client-sessions');
+
+// authentication
+var auth = require('http-auth');
+var basic_auth = auth.basic({
+    realm : "Scribe JS WebPanel",
+    file : __dirname + "/user.sysadmin"
+});
+
+// logger
+var scribe = require('scribe-js')();
+var console = process.console;
 
 // add handlebars annd create a default layout
 var exphbs = require('express-handlebars');
@@ -16,6 +26,13 @@ var app = express();
 // set views path and listening port
 app.set('views', __dirname + '/views');
 app.set('port', process.env.port || 5000);
+
+// set logger
+app.use(scribe.express.logger());
+app.use('/logs', auth.connect(basic_auth), scribe.webPanel());
+console.addLogger('debug','blue');
+console.addLogger('error', 'red');
+console.addLogger('log', 'white');
 
 // view engine setup
 app.engine('handlebars', exphbs({ 
@@ -30,13 +47,9 @@ app.engine('handlebars', exphbs({
 }));
 app.set('view engine', 'handlebars');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname+'/public/favicon.ico'));
- 
-//app.use(logger('dev'));
+// set body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-//app.use(cookieParser());
 
 // static content declaration
 app.use('/js', express.static(__dirname + '/public/bootstrap/dist/js')); // redirect JS bootstrap
@@ -115,42 +128,51 @@ app.get('/register', function(req, res){
 
 app.post('/register/process', function(req, res){
     console.log('Form (from querystring): ' + req.query.form);
-    /*
-        TODO Typical db-related operations:
-        check if an entry exists before create a new one
-        edit an existing entry
-        ...
-    */
-    // adding info to DB
-   new phenotype({
-        email : req.body.email,
-        name : req.body.pac_name,
-        pin : Math.floor(Math.random() * 999999),
-        birthDate : tools.toDate(req.body.bday),
-        gender : tools.toBoolean(req.body.gender),
-        cohabitation : parseInt(req.body.cohabitation),
-        diagnosis : req.body.diag,
-        diagnosisAge : req.body.diagAge,
-        senLit : tools.toBoolean(req.body.litsens),
-        senVal : tools.toBoolean(req.body.valsens),
-        senCar : tools.toBoolean(req.body.carsens),
-        seasonality : tools.toBoolean(req.body.season),
-        maniaCrises : parseInt(req.body.mancrisis),
-        mixedCrises : parseInt(req.body.mixcrisis),
-        freePeriod : parseInt(req.body.freeper),
-        psycSymp : tools.toBoolean(req.body.psychs),
-        others : req.body.others,
-    }).save(function(err){
-       if(req.xhr) 
-           return res.json({ success: true});
-        console.log('Patient added.')
-        req.session.flash = {
-            type : 'success',
-            intro : 'User added!',
-            message : 'The new patient has been added to the DB.'
-        };
-       return res.redirect(303, '/index');
-   }); 
+    phenotype.find({email : req.body.email}, function(err, results){
+        if (results.length != 0){
+            console.log('The patient already exists.');
+            if(req.xhr) 
+               return res.json({ success: true});
+            req.session.flash = {
+                type : 'alert',
+                intro : 'The patient already exists.',
+                message : 'Please check and try again.'
+            };
+           return res.redirect(303, '/register');
+        }
+        else{
+            // adding info to DB
+            new phenotype({
+            email : req.body.email,
+            name : req.body.pac_name,
+            pin : Math.floor(Math.random() * 999999),
+            birthDate : tools.toDate(req.body.bday),
+            gender : tools.toBoolean(req.body.gender),
+            cohabitation : parseInt(req.body.cohabitation),
+            diagnosis : req.body.diag,
+            diagnosisAge : req.body.diagAge,
+            senLit : tools.toBoolean(req.body.litsens),
+            senVal : tools.toBoolean(req.body.valsens),
+            senCar : tools.toBoolean(req.body.carsens),
+            seasonality : tools.toBoolean(req.body.season),
+            maniaCrises : parseInt(req.body.mancrisis),
+            mixedCrises : parseInt(req.body.mixcrisis),
+            freePeriod : parseInt(req.body.freeper),
+            psycSymp : tools.toBoolean(req.body.psychs),
+            others : req.body.others,
+        }).save(function(err){
+           if(req.xhr) 
+               return res.json({ success: true});
+            console.log('Patient added.')
+            req.session.flash = {
+                type : 'success',
+                intro : 'User added!',
+                message : 'The new patient has been added to the DB.'
+            };
+           return res.redirect(303, '/index');
+            }); 
+        }
+    });  
 });
 
 app.get('/register/unregister/:pat_id', function(req, res){
@@ -287,8 +309,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Prescription edited.');
             req.session.flash = {
                 type : 'success',
-                intro : 'Receta editada',
-                message : 'La receta ha sido editada satisfactoriamente'
+                intro : 'Prescription edited.',
+                message : 'The prescription has been edited successfully.'
             };
             res.redirect(303,'/patient-info/'+pat_id+'/prescriptions');
         });
@@ -325,8 +347,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Prescription added.')
             req.session.flash = {
                 type : 'success',
-                intro : 'Receta añadida',
-                message : 'Se ha añadido la receta a la base de datos'
+                intro : 'Prescription added.',
+                message : 'The prescription has been added successfully.'
         };
         
             res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
@@ -407,8 +429,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Record added.')
             req.session.flash = {
                 type : 'success',
-                intro : 'Test añadidos',
-                message : 'Se ha añadido los test a la base de datos'
+                intro : 'Test added',
+                message : 'The selected test have been added to the DB.'
         };
         
             res.redirect(303, '/patient-info/'+pat_id+'/records');
@@ -480,8 +502,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Message added.')
             req.session.flash = {
                 type : 'success',
-                intro : 'Mensaje añadido',
-                message : 'Se ha añadido el mensaje a la base de datos'
+                intro : 'Message added',
+                message : 'The message has been added to the DB'
             };
             res.redirect(303, '/patient-info/'+pat_id+'/communication');
         });
@@ -511,8 +533,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Message edited.');
             req.session.flash = {
                 type : 'success',
-                intro : 'Mensaje editado',
-                message : 'El mensaje ha sido editado satisfactoriamente'
+                intro : 'Message edited',
+                message : 'The message has been edited'
             };
             res.redirect(303,'/patient-info/'+pat_id+'/prescriptions');
         });
@@ -528,8 +550,8 @@ app.post('/tracing/process', function(req, res){
                 return res.json({ success : true });
             req.session.flash = {
                 type : 'success',
-                intro : 'Mensaje eliminado',
-                message : 'Se ha eliminado el mensaje de la base de datos'
+                intro : 'Message deleted',
+                message : 'The message has been deleted from the DB'
         };
             res.redirect(303, '/patient-info/'+pat_id+'/communication');
         }); 

@@ -17,6 +17,8 @@
     "monk": "^1.0.1",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
-    "client-sessions":"^0.7.0"
+    "client-sessions":"^0.7.0",
+    "scribe-js": "^2.0.4",
+    "http-auth": "^2.3.7"  
   }
 }
