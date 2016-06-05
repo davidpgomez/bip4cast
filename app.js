@@ -226,7 +226,8 @@ app.post('/tracing/process', function(req, res){
         var pat_id = req.query.id;
         console.log('Date: ' + req.body.date);
         var date = tools.toDate(req.body.date).toISOString();
-        comments.find({user_id : pat_id, dateStart : {$lte : date}, dateEnd :{ $gte : date}}, function(err, results){
+        comments.find({user_id : pat_id, prescription : true, dateStart : {$lte : date}, $or : 
+                       [{dateEnd : { $gte : date}}, {dateEnd : null}]}, function(err, results){
             console.log('Quering active prescriptions of patient ' + pat_id + ' in ' + date);
             console.log('Results found: ' + results.length);
             var context = {
@@ -237,6 +238,7 @@ app.post('/tracing/process', function(req, res){
             pat_id : pat_id,
             comm_list : results.map(function(comments){
                 return {
+                    presid : comments._id,
                     name : comments.name,
                     type : comments.type,
                     dateStart : tools.parseDate(comments.dateStart),
@@ -244,7 +246,12 @@ app.post('/tracing/process', function(req, res){
                     time : tools.parseMinutes(comments.time),
                     dose : comments.dose,
                     title : comments.title,
-                    text : comments.text
+                    text : comments.text,
+                    raw : {
+                        dateStart : tools.toRawDate(comments.dateStart),
+                        dateEnd : tools.toRawDate(comments.dateEnd),
+                        forever : comments.dateEnd==null?true:false
+                    }
                 }
             })
         };
@@ -256,7 +263,13 @@ app.post('/tracing/process', function(req, res){
         var pat_id = req.query.patid;
         console.log('Updating prescription ' + pres_id);
         var begindate = tools.toDate(req.body.begindate);
-        var enddate = tools.toDate(req.body.enddate);
+        var enddate;
+        if(req.body.forever == 'on'){
+            enddate = null;
+        }
+        else{
+            enddate = tools.toDate(req.body.enddate);
+        }
         comments.update({_id : pres_id}, {
             dateStart : begindate,
             dateEnd : enddate,
@@ -285,7 +298,13 @@ app.post('/tracing/process', function(req, res){
     else if (form == 'addprescription'){
         var pat_id = req.query.patid;
         var begindate = tools.toDate(req.body.begindate);
-        var enddate = tools.toDate(req.body.enddate);
+        var enddate;
+        if(req.body.forever == 'on'){
+            enddate = null;
+        }
+        else{
+            enddate = tools.toDate(req.body.enddate);
+        }
         console.log('Adding prescription');
         new comments({
             user_id : pat_id,
@@ -430,7 +449,13 @@ app.post('/tracing/process', function(req, res){
     else if (form == 'addmessage'){
         var pat_id = req.query.patid;
         var begindate = tools.toDate(req.body.begindate);
-        var enddate = tools.toDate(req.body.enddate);
+        var enddate;
+        if(req.body.scheduled == 'on'){
+            enddate = null;
+        }
+        else{
+            enddate = tools.toDate(req.body.enddate);
+        }
         console.log('Adding message');
         var now = new Date();
         if(req.body.sendnow = 'on'){
@@ -466,26 +491,28 @@ app.post('/tracing/process', function(req, res){
         var pat_id = req.query.patid;
         console.log('Updating message ' + msgid);
         var begindate = tools.toDate(req.body.begindate);
-        var enddate = tools.toDate(req.body.enddate);
+        var enddate;
+        if(req.body.scheduled == 'on'){
+            enddate = null;
+        }
+        else{
+            enddate = tools.toDate(req.body.enddate);
+        }
         comments.update({_id : pres_id}, {
             dateStart : begindate,
             dateEnd : enddate,
             time : tools.toMinutes(req.body.time),
-            name : req.body.name,
-            type : req.body.type,
-            title : req.body.title,
             text : req.body.text,
-            dose : parseInt(req.body.dose),
         }, function(err, result){
             if (err)
                 console.error(err);
             if(req.xhr)
                 return res.json({ success : true });
-            console.log('Prescription edited.');
+            console.log('Message edited.');
             req.session.flash = {
                 type : 'success',
-                intro : 'Receta editada',
-                message : 'La receta ha sido editada satisfactoriamente'
+                intro : 'Mensaje editado',
+                message : 'El mensaje ha sido editado satisfactoriamente'
             };
             res.redirect(303,'/patient-info/'+pat_id+'/prescriptions');
         });
@@ -629,7 +656,8 @@ app.get('/patient-info/:pat_id/prescriptions', function(req, res){
                     text : comments.text,
                     raw : {
                         dateStart : tools.toRawDate(comments.dateStart),
-                        dateEnd : tools.toRawDate(comments.dateEnd)
+                        dateEnd : tools.toRawDate(comments.dateEnd),
+                        forever : comments.dateEnd==null?true:false
                     }
                 }
             })

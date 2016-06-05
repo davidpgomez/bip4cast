@@ -18,6 +18,14 @@
           $(this).find('.modal-body input#enddate').val(button.data('dend'));
           $(this).find('.modal-body input#ptitle').val(button.data('title'));
           $(this).find('.modal-body input#ptext').val(button.data('text'));
+          if(button.data('forever')){
+              $(this).find('.modal-body input#enddate').prop('disabled', true);
+              $(this).find('.modal-body input#forever').prop('checked', true);
+          }
+          else{
+              $(this).find('.modal-body input#enddate').prop('disabled', false);
+              $(this).find('.modal-body input#forever').prop('checked', false);
+          }
       }
         else if(act == "add"){
             $(this).find('.modal-title').text('Añadir receta');
@@ -85,6 +93,12 @@
                         <label for="enddate" class="col-sm-3 control-label">Final</label>
                         <div class="col-sm-6">
                             <input type="date" class="form-control" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="scheduled" class="col-sm-3 control-label"></label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" name="forever" id="forever" onChange="document.getElementById('enddate').disabled = this.checked;"> Receta sin final
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -168,7 +182,7 @@
                     <td> {{time}} </td>
                     <td> {{dose}} </td>
                     <td> 
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingPres" data-pid="{{presid}}" data-patid="{{../pat_id}}" data-name="{{name}}" data-time="{{time}}" data-dose="{{dose}}" data-dtype="{{type}}" data-dstart="{{raw.dateStart}}" data-dend="{{raw.dateEnd}}" data-title="{{title}}" data-text="{{text}}"> <span class="glyphicon glyphicon-edit"></span> </button>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingPres" data-pid="{{presid}}" data-patid="{{../pat_id}}" data-name="{{name}}" data-time="{{time}}" data-dose="{{dose}}" data-dtype="{{type}}" data-dstart="{{raw.dateStart}}" data-forever="{{raw.forever}}" data-dend="{{raw.dateEnd}}" data-title="{{title}}" data-text="{{text}}"> <span class="glyphicon glyphicon-edit"></span> </button>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removPres" data-pid="{{presid}}" data-patid="{{../pat_id}}"> <span class="glyphicon glyphicon-remove"></span></button>
                     </td>
                 </tr>
