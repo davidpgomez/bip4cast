@@ -1,6 +1,17 @@
 {
-  "name": "bip4cast",
-  "version": "0.1",
+  "name" : "bip4cast",
+  "version" : "0.1.0-1",
+  "description": "The web app of bip4cast project",
+  "homepage" : "https://www.bip4cast.org",
+  "license" : "GPL 3",
+  "author" : {
+    "name" : "David Peñas"
+   },
+  "main" : "app.js",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/davidpgomez/bip4cast.git"
+  },
   "private": true,
   "dependencies": {
     "body-parser": "~1.13.2",
