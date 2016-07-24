@@ -19,7 +19,13 @@
 
     <!-- Custom styles for this template -->
     <link href="/stylesheets/dashboard.css" rel="stylesheet">
-
+    
+	{{#if visuactive}}
+    <!-- D3.js and dimple.js minified -->
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="http://dimplejs.org/dist/dimple.v2.2.0.min.js"></script>
+    {{/if}}
+	 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <!-- <script src="/js/ie-emulation-modes-warning.js"></script> -->
@@ -31,6 +37,8 @@
     <![endif]-->
     
   </head>
+    
+    {{{_sections.top}}}
 
   <body>
 
@@ -54,6 +62,7 @@
             <li {{#if dashactive}}class="active"{{/if}}><a href="/index">Dashboard{{#if dashactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
             <li {{#if aleractive}}class="active"{{/if}}><a href="/alerts">Alertas{{#if aleractive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
             <li {{#if tracactive}}class="active"{{/if}}><a href="/tracing">Seguimiento{{#if tracactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
+            <li {{#if visuactive}}class="active"{{/if}}><a href="/visualization">Visualizacion{{#if visuaactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
             <li {{#if regiactive}}class="active"{{/if}}><a href="/register">Nuevo paciente{{#if regiactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">

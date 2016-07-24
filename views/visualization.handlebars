@@ -1,0 +1,163 @@
+{{!-- Scripting --}}
+
+
+{{#section 'jquery'}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
+<script src="templates.js"></script>
+
+<script src="d3test.js"></script>
+
+{{!-- Script to do patient search --}}
+<script type="text/javascript">
+	 $(document).ready(function(){
+		 $("#search").click(function(){
+			// text in the search field
+			var query = document.getElementById("pac_name").value; 
+
+			$.ajax({
+				url: '/tracing/process?form=modalpatientsearch&q='+query,
+				type: 'POST',
+				success: function(data){
+					$('#searchResults').empty();
+					var template = Handlebars.getTemplate('templates/addpatientmodal');
+					$('#searchResults').empty();
+					if(data.length > 0)
+					{
+						$.each(data, function(i, context){
+							$('#searchResults').append( template(context) );
+						});
+					} else {
+						$('#searchResults').append("No se han encontrado resultados.");
+					}
+				},
+				error: function (){
+					alert("Error. Please refresh the page and try again.");
+				}
+			});
+		});
+		$('#adddatasets').click(function(){
+			// we only select checkboxes which are checked 8and discard other attributes such as __proto__)
+			var list = $('.dataset_sel:checked').map(function(p, obj){
+				return{
+					name : $(obj).attr('data-name'),
+					id : $(obj).attr('data-id')
+				}
+			}).get();
+			
+			// render results by templating
+			var template = Handlebars.getTemplate('/templates/patientselector');
+			var context = {pat_list : list}
+			$('#patientsList').append(template(context));
+		});
+			
+	$('#patientsList').on('click', '.pres_sel',function (event) {
+			var chkbox = event.currentTarget;
+			var pat_id = $(chkbox).attr('data-id');
+			if(chkbox.checked){
+				$.ajax({
+					contentType : 'application/json',
+					data : JSON.stringify({beginDate : $('#begindate').val(), endDate : $('#enddate').val()}),
+					url: '/api/prescriptions/'+pat_id,
+					type: 'POST',
+					success: function(data){
+						if(data.length === 0){
+							alert('No se han encontrado resultados');
+						}
+						else{
+							redrawChart(data);
+						}
+					},
+					error: function (){
+						alert("Error. Please refresh the page and try again.");
+					},
+				});
+				
+			}
+			else{
+				// otherwise, the prescription data must dissapear
+				
+			}
+		});
+	 });
+</script>
+
+
+
+{{/section}}
+
+{{!-- Scripts del D3 --}}
+
+<style>
+.chart rect {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+</style>
+
+{{!-- Patient search modal --}}
+<div id="addPatient" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Agregar datos de paciente</h4>
+            </div>
+            <div class="modal-body">
+                <fieldset class="form-group">
+					<label for="title" class="col-sm-3 control-label">Búsqueda</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" placeholder="Nombre o apellidos del paciente" name="pac_name" id="pac_name">
+						<button id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+						{{!-- Here we place search results --}}
+						<div id="searchResults">
+							
+						</div>
+					</div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <form method="post">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="adddatasets">Agregar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- We need patient data and dates to draw --}}
+
+<div class="col-sm-4" id="patientsContainter">
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPatient"> <span class="glyphicon glyphicon-plus"></span> Añadir nuevo </button>
+	<div>
+		<h4>Listado de pacientes</h4>
+		<div id="patientsList">
+			
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-8" id="chartContainer">
+	<div class="col-sm-5 pull-left">
+		<fieldset class="form-group">
+			<label for="begindate">Comienzo</label>
+			<input type="date" class="form-control" id="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+		</fieldset>
+	</div>
+	<div class="col-sm-5">
+		<fieldset class="form-group">
+			<label for="enddate">Final</label>
+			<input type="date" class="form-control" id="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" required>
+		</fieldset>
+	</div>
+	
+	
+
+</div>
+
+

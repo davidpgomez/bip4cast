@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('client-sessions');
+var connect = require('connect');
+var Rest = require('connect-rest');
 
 // authentication
 var auth = require('http-auth');
@@ -12,10 +14,14 @@ var basic_auth = auth.basic({
     file : __dirname + "/user.sysadmin"
 });
 
+// connect 
+var connectApp = connect().use( bodyParser.urlencoded({extended : true})).use(bodyParser.json());
+
 // logger
+/*
 var scribe = require('scribe-js')();
 var console = process.console;
-
+*/
 // add handlebars annd create a default layout
 var exphbs = require('express-handlebars');
 // add tools
@@ -28,11 +34,13 @@ app.set('views', __dirname + '/views');
 app.set('port', process.env.port || 5000);
 
 // set logger
+/*
 app.use(scribe.express.logger());
 app.use('/logs', auth.connect(basic_auth), scribe.webPanel());
 console.addLogger('debug','blue');
 console.addLogger('error', 'red');
 console.addLogger('log', 'white');
+*/
 
 // view engine setup
 app.engine('handlebars', exphbs({ 
@@ -219,32 +227,41 @@ app.get('/register/unregister/:pat_id', function(req, res){
 });
 
 // form processing
+
 app.post('/tracing/process', function(req, res){
     var form = req.query.form;
     if (form == 'patientsearch'){
-        console.log('Form (from querystring): ' + req.query.form);
-        console.log('Patient name (from visible form field): ' + req.body.pac_name);
-        var patientnameregex = new RegExp(req.body.pac_name, 'i');
-        phenotype.find({name : patientnameregex}, function(err, results){
-            if(err) console.error(err);
-            console.log('Number of results found: ' + results.length);
-
-            // create context and render results
-            var context = {
-                pagetitle : 'Resultados de la búsqueda',
-                tracactive : true,
-                pac_list : results.map(function(phenotype){ 
-                  return {
-                      pac_id : phenotype._id, 
-                      name : phenotype.name,
-                      birthDate : tools.parseDate(phenotype.birthDate),
-                      gender : tools.parseGender(phenotype.gender),
-                  }
-              })
-            };
-            res.render('search-results/patient-search', context);
-        });
-    }
+		console.log('Retrieving possible patients containing: ' + req.body.pac_name);
+		var patientnameregex = new RegExp(req.body.pac_name, 'i');
+		phenotype.find({name : patientnameregex}, function(err, results){
+			if(err) console.error(err);
+			console.log('Number of results found: ' + results.length);
+			// create context if there are no results
+			if (results == undefined){
+				var context = {
+				pagetitle : 'Resultados de la búsqueda',
+				tracactive : true,
+				};
+				// mensaje flash con que no hay resultados (u otra cosa similar)
+				res.render('search-results/patient-search', context);
+			}
+			else{
+				var context = {
+				pagetitle : 'Resultados de la búsqueda',
+				tracactive : true,
+				pac_list : results.map(function(phenotype){ 
+				return {
+					pac_id : phenotype._id, 
+					name : phenotype.name,
+					birthDate : tools.parseDate(phenotype.birthDate),
+					gender : tools.parseGender(phenotype.gender),
+					}
+					})
+				};
+				res.render('search-results/patient-search', context);
+			}
+		});
+	}
     else if (form == 'updateprescriptions'){
         var pat_id = req.query.id;
         console.log('Date: ' + req.body.date);
@@ -603,7 +620,19 @@ app.post('/tracing/process', function(req, res){
             }
         });
     }
+	else if (form == 'modalpatientsearch'){
+		var query= req.query.q;
+		console.log('Retrieving possible patients containing: ' + query);
+		var patientnameregex = new RegExp(query, 'i');
+		phenotype.find({name : patientnameregex}, function(err, results){
+			if(err) console.error(err);
+			console.log('Number of results found: ' + results.length);
+			res.send(results);
+		});
+	}
 });
+
+
 
 // patient info 
 app.get('/patient-info/:pat_id/main', function(req, res){
@@ -779,6 +808,48 @@ app.get('/patient-info/:pat_id/communication', function(req, res){
         res.render('patients/communication', context);
     });
 });
+
+// data visualization
+app.get('/visualization', function(req, res){
+    var context = {
+        pagetitle : 'Visualización',
+        visuactive : true
+    };
+    res.render('visualization', context);
+});
+
+// API configuration
+
+var apiOptions = {
+	'context' : '/api'
+}
+var rest = Rest.create(apiOptions);
+app.use(rest.processRequest());
+
+// link API into pipeline
+
+rest.post('/prescriptions/:pat_id', function(req, content, cb){
+	var pat_id = req.params.pat_id; // obtain pat_id from url
+	var begindate = tools.toDate(content.beginDate);
+	var enddate = tools.toDate(content.endDate);
+	comments.find({ user_id : pat_id, prescription : true}, function(err, results){
+		if(err) return cb({error : 'Internal server error.'});
+		if(results.length === 0)
+			cb(null, results);
+		else{
+			var data = results.map(function(p){
+				return{
+					beginDate : p.dateStart,
+					endDate : p.dateEnd,
+					type : p.type
+				}
+			});
+			cb(null, tools.createPrescriptionsJSON(data, begindate, enddate));
+		}
+	});
+});
+
+
 
 // error handlers
 
