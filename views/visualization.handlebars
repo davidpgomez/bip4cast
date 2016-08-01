@@ -2,7 +2,8 @@
 
 
 {{#section 'jquery'}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
+{{!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script> --}}
+<script src="handlebars.min.js"></script>
 <script src="templates.js"></script>
 
 <script src="d3test.js"></script>
@@ -12,28 +13,28 @@
 	 $(document).ready(function(){
 		 $("#search").click(function(){
 			// text in the search field
-			var query = document.getElementById("pac_name").value; 
+			var query = document.getElementById("pac_name").value;
 
-			$.ajax({
-				url: '/tracing/process?form=modalpatientsearch&q='+query,
-				type: 'POST',
-				success: function(data){
-					$('#searchResults').empty();
-					var template = Handlebars.getTemplate('templates/addpatientmodal');
-					$('#searchResults').empty();
-					if(data.length > 0)
-					{
-						$.each(data, function(i, context){
-							$('#searchResults').append( template(context) );
-						});
-					} else {
-						$('#searchResults').append("No se han encontrado resultados.");
-					}
-				},
-				error: function (){
-					alert("Error. Please refresh the page and try again.");
-				}
-			});
+                $.ajax({
+                    url: '/tracing/process?form=modalpatientsearch&q='+query,
+                    type: 'POST',
+                    success: function(data){
+                        $('#searchResults').empty();
+                        var template = Handlebars.getTemplate('templates/addpatientmodal');
+                        $('#searchResults').empty();
+                        if(data.length > 0)
+                        {
+                            $.each(data, function(i, context){
+                                $('#searchResults').append( template(context) );
+                            });
+                        } else {
+                            $('#searchResults').append("No se han encontrado resultados.");
+                        }
+                    },
+                    error: function (){
+                        alert("Error. Please refresh the page and try again.");
+                    }
+                });
 		});
 		$('#adddatasets').click(function(){
 			// we only select checkboxes which are checked 8and discard other attributes such as __proto__)
@@ -50,35 +51,56 @@
 			$('#patientsList').append(template(context));
 		});
 			
-	$('#patientsList').on('click', '.pres_sel',function (event) {
-			var chkbox = event.currentTarget;
-			var pat_id = $(chkbox).attr('data-id');
-			if(chkbox.checked){
-				$.ajax({
+		$('#patientsList').on('click', '.pat_sel',function (event) {
+		var chkbox = event.currentTarget;
+		var pat_id = $(chkbox).attr('data-id');
+		if(chkbox.checked){
+            // obtain test dataset
+			$.ajax({
+				contentType : 'application/json',
+				data : JSON.stringify({beginDate : $('#begindate').val(), endDate : $('#enddate').val()}),
+				url: '/api/test/'+pat_id,
+				type: 'POST',
+				success: function(data){
+					if(data.length === 0){
+						alert('No se han encontrado resultados de test para el intervalo seleccionado.');
+					}
+					else{
+						loadRecordsDataset(data, true);
+					}
+				},
+				error: function (){
+					alert("Error. Please refresh the page and try again.");
+				},
+			});
+            // obtain presciption dataset
+            $.ajax({
 					contentType : 'application/json',
 					data : JSON.stringify({beginDate : $('#begindate').val(), endDate : $('#enddate').val()}),
 					url: '/api/prescriptions/'+pat_id,
 					type: 'POST',
 					success: function(data){
 						if(data.length === 0){
-							alert('No se han encontrado resultados');
+							alert('No se han encontrado resultados de medicación para el intervalo seleccionado.');
 						}
 						else{
-							redrawChart(data);
+							loadPrescriptionDataset(data, true);
 						}
 					},
 					error: function (){
 						alert("Error. Please refresh the page and try again.");
 					},
 				});
-				
-			}
-			else{
-				// otherwise, the prescription data must dissapear
-				
-			}
-		});
-	 });
+
+		}
+		else{
+			// otherwise, the chart should dissapear
+            loadPrescriptionDataset(undefined, false);
+            loadRecordsDataset(undefined, false);
+            deleteChart();
+		}
+	});
+});
 </script>
 
 
@@ -132,7 +154,7 @@
 
 {{!-- We need patient data and dates to draw --}}
 
-<div class="col-sm-4" id="patientsContainter">
+<div class="col-sm-3" id="patientsContainter">
 	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPatient"> <span class="glyphicon glyphicon-plus"></span> Añadir nuevo </button>
 	<div>
 		<h4>Listado de pacientes</h4>
@@ -142,7 +164,7 @@
 	</div>
 </div>
 
-<div class="col-sm-8" id="chartContainer">
+<div class="col-sm-9" id="chartContainer">
 	<div class="col-sm-5 pull-left">
 		<fieldset class="form-group">
 			<label for="begindate">Comienzo</label>

@@ -458,9 +458,8 @@ app.post('/tracing/process', function(req, res){
         var pat_id = req.query.id;
         console.log('Date: ' + req.body.date);
         var date = tools.toDate(req.body.date).toISOString();
-        records.find({user_id : pat_id, date :  date}, function(err, results){
+        records.findOne({user_id : pat_id, date :  date}, function(err, results){
             console.log('Quering patient ' + pat_id + ' tests in ' + date);
-            console.log('Results found: ' + results.length);
             var context = {
                 pagetitle : 'Informes médicos',
                 patientview : true,
@@ -845,6 +844,31 @@ rest.post('/prescriptions/:pat_id', function(req, content, cb){
 				}
 			});
 			cb(null, tools.createPrescriptionsJSON(data, begindate, enddate));
+		}
+	});
+});
+
+rest.post('/test/:pat_id', function(req, content, cb){
+	var pat_id = req.params.pat_id; // obtain pat_id from url
+	var begindate = tools.toDate(content.beginDate);
+	var enddate = tools.toDate(content.endDate);
+	records.find({ user_id : pat_id, date : {$gte : begindate, $lte : enddate}}, function(err, results){
+		if(err) return cb({error : 'Internal server error.'});
+		if(results.length === 0)
+			cb(null, results);
+		else{
+			var data = results.map(function(p){
+				return{
+					date : p.date,
+					eeag : p.eeag,
+					hdrs : tools.parseRecord(p.hdrs, 'hdrs'),
+					ymrs : tools.parseRecord(p.ymrs, 'ymrs'),
+					panss_gen : tools.parseRecord(p.panss.panss_gen, 'panss_gen'),
+					panss_pos : tools.parseRecord(p.panss.panss_pos, 'panss_pos'),
+					panss_neg : tools.parseRecord(p.panss.panss_neg, 'panss_neg')
+				}
+			});
+			cb(null, tools.createRecordsJSON(data));
 		}
 	});
 });
