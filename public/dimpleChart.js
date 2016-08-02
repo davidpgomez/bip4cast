@@ -81,19 +81,6 @@ function afterFirstDraw(){
     // This block simply adds the legend title. I put it into a d3 data
     // object to split it onto 2 lines.  This technique works with any
     // number of lines, it isn't dimple specific.
-    /*
-    svg.selectAll("title_text")
-      .data(["Click legend to","show/hide series:"])
-      .enter()
-      .append("text")
-        .attr("x", 640)
-        .attr("y", function (d, i) { return 10 + i * 14; })
-        .style("font-family", "sans-serif")
-        .style("font-size", "10px")
-        .style("color", "Black")
-        .text(function (d) { return d; });
-    */
-
     var data = mergeSeriesData();
 
     // Get a unique list of Owner values to use when filtering
@@ -105,11 +92,23 @@ function afterFirstDraw(){
         // This indicates whether the item is already visible or not
         var hide = false;
         var newFilters = [];
+        // if the clicked value is one of the test, we should change the value we push
+        // because the label is distinct of the type value of the test datast
+        var filterValue = e.aggField.slice(-1)[0];
+        switch(filterValue){
+            case 'EEAG': filterValue = 'eeag'; break;
+            case 'HDRS': filterValue = 'hdrs'; break;
+            case 'YMRS': filterValue = 'ymrs'; break;
+            case 'PANSS POS': filterValue = 'panss_pos'; break;
+            case 'PANSS NEG': filterValue = 'panss_neg'; break;
+            case 'PANSS GEN': filterValue = 'panss_gen'; break;
+        }
+        
         // If the filters contain the clicked shape hide it
         filterValues.forEach(function (f) {
-          if (f === e.aggField.slice(-1)[0]) {
+          if (f === filterValue) {
             hide = true;
-          } else {
+          } else {  
             newFilters.push(f);
           }
         });
@@ -117,15 +116,17 @@ function afterFirstDraw(){
         if (hide) {
           d3.select(this).style("opacity", 0.2);
         } else {
-          newFilters.push(e.aggField.slice(-1)[0]);
+          // if the value is not in the filterList and it hide, we pushed it    
+          newFilters.push(filterValue);
           d3.select(this).style("opacity", 0.8);
         }
         // Update the filters
         filterValues = newFilters;
         // Filter the data
         var dataset = dimple.filterData(data, "type", filterValues);
-        loadPrescriptionDataset(dataset, false);
-        loadRecordsDataset(dataset, false);
+        // Reload datasets
+        loadPrescriptionDataset(dataset);
+        loadRecordsDataset(dataset);
         // Passing a duration parameter makes the chart animate. Without
         // it there is no transition
         myChart.draw(1000);
@@ -134,7 +135,7 @@ function afterFirstDraw(){
 
 function initChart(){
     myChart = new dimple.chart(svg, null);
-    myChart.setBounds(60, 30, '75%', '80%');
+    myChart.setBounds(60, 30, '73%', '80%');
     xAxis = myChart.addTimeAxis("x", "date", "%Y-%m-%d", "%d/%m/%Y");
     xAxis.addOrderRule("date");
     xAxis.title = "Fecha";
@@ -160,7 +161,7 @@ function initChart(){
     panssNegSeries = myChart.addSeries("PANSS NEG", dimple.plot.line, [xAxis,panssNegAxis]);
     panssGenSeries = myChart.addSeries("PANSS GEN", dimple.plot.line, [xAxis,panssGenAxis]);
     
-    myLegend = myChart.addLegend('80%', 20, '20%', '50%', "right");
+    myLegend = myChart.addLegend('80%', 30, '20%', '50%', "right");
 }
 
 function deleteChart(){
@@ -186,7 +187,7 @@ function drawChart(yetDrawed){
 
 var svg = dimple.newSvg("#chartContainer", '100%', 400);
 var myChart = new dimple.chart(svg, null);
-myChart.setBounds(60, 30, '75%', '75%');
+myChart.setBounds(60, 30, '73%', '75%');
 var xAxis = myChart.addTimeAxis("x", "date", "%Y-%m-%d", "%d/%m/%Y");
 xAxis.addOrderRule("date");
 xAxis.title = "Fecha";
@@ -212,7 +213,7 @@ var panssPosSeries = myChart.addSeries("PANSS POS", dimple.plot.line, [xAxis,pan
 var panssNegSeries = myChart.addSeries("PANSS NEG", dimple.plot.line, [xAxis,panssNegAxis]);
 var panssGenSeries = myChart.addSeries("PANSS GEN", dimple.plot.line, [xAxis,panssGenAxis]);
 
-var myLegend =  myChart.addLegend('80%', 20, '20%', '50%', "right");
+var myLegend =  myChart.addLegend('80%', 30, '20%', '50%', "right");
 
 
 
