@@ -6,7 +6,7 @@
 <script src="handlebars.min.js"></script>
 <script src="templates.js"></script>
 
-<script src="d3test.js"></script>
+<script src="dimpleChart.js"></script>
 
 {{!-- Script to do patient search --}}
 <script type="text/javascript">
@@ -50,54 +50,64 @@
 			var context = {pat_list : list}
 			$('#patientsList').append(template(context));
 		});
-			
-		$('#patientsList').on('click', '.pat_sel',function (event) {
-		var chkbox = event.currentTarget;
-		var pat_id = $(chkbox).attr('data-id');
-		if(chkbox.checked){
-            // obtain test dataset
-			$.ajax({
+         
+        function requestPrescriptionDataset(pat_id){
+            return $.ajax({
 				contentType : 'application/json',
 				data : JSON.stringify({beginDate : $('#begindate').val(), endDate : $('#enddate').val()}),
 				url: '/api/test/'+pat_id,
 				type: 'POST',
-				success: function(data){
-					if(data.length === 0){
-						alert('No se han encontrado resultados de test para el intervalo seleccionado.');
-					}
-					else{
-						loadRecordsDataset(data, true);
-					}
-				},
-				error: function (){
-					alert("Error. Please refresh the page and try again.");
-				},
 			});
-            // obtain presciption dataset
-            $.ajax({
+        }
+        
+        function requestTestDataset(pat_id){
+            return $.ajax({
 					contentType : 'application/json',
 					data : JSON.stringify({beginDate : $('#begindate').val(), endDate : $('#enddate').val()}),
 					url: '/api/prescriptions/'+pat_id,
 					type: 'POST',
-					success: function(data){
-						if(data.length === 0){
-							alert('No se han encontrado resultados de medicación para el intervalo seleccionado.');
-						}
-						else{
-							loadPrescriptionDataset(data, true);
-						}
-					},
-					error: function (){
-						alert("Error. Please refresh the page and try again.");
-					},
 				});
-
+        }
+			
+		$('#patientsList').on('click', '.pat_sel',function (event) {
+		var chkbox = event.currentTarget;
+		var pat_id = $(chkbox).attr('data-id');
+        var yetDrawed
+		if(chkbox.checked){
+            $.when(requestPrescriptionDataset(pat_id), requestTestDataset(pat_id)).done(function (testDatasetResponse, prescriptionDatasetResponse){
+                if(testDatasetResponse[1] === 'success'){
+                    if(testDatasetResponse[0].length != 0){
+                        loadRecordsDataset(testDatasetResponse[0]);
+                    }
+                    else{
+                        alert('No se han encontrado resultados de test para el intervalo seleccionado.');
+                        loadRecordsDataset(undefined);
+                    }
+                } else{
+                    alert("Error. Please refresh the page and try again.");
+                    loadRecordsDataset(undefined);        
+                }
+                if(prescriptionDatasetResponse[1] === 'success'){
+                    if(prescriptionDatasetResponse[0].length != 0){
+                        loadPrescriptionDataset(prescriptionDatasetResponse[0]);
+                    }
+                    else{
+                        alert('No se han encontrado resultados de medicación para el intervalo seleccionado.');
+                        loadPrescriptionDataset(undefined);
+                    }
+                } else{
+                    alert("Error. Please refresh the page and try again.");
+                    prescriptionDatasetResponse(undefined);        
+                }
+                drawChart();
+            });
 		}
 		else{
 			// otherwise, the chart should dissapear
-            loadPrescriptionDataset(undefined, false);
-            loadRecordsDataset(undefined, false);
+            loadPrescriptionDataset(undefined);
+            loadRecordsDataset(undefined);
             deleteChart();
+            initChart();
 		}
 	});
 });

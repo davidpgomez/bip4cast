@@ -22,8 +22,12 @@
     
 	{{#if visuactive}}
     <!-- D3.js and dimple.js minified -->
+	{{!-- 
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="http://dimplejs.org/dist/dimple.v2.2.0.min.js"></script>
+	--}}
+	<script src="d3.v3.min.js" charset="utf-8"></script>
+	<script src="dimple.v2.2.0.min.js"></script>
     {{/if}}
 	 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
@@ -100,7 +104,7 @@
                 </div>
            {{else}}
            
-          <div class="col-sm-9 col-md-10 main">
+          <div class="col-sm-12 col-md-12 main">
             <h1 class="page-header">{{pagetitle}}</h1>
                 {{{body}}}
 	       </div>
@@ -111,7 +115,8 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages  <load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    {{!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> --}}
+	<script src="jquery.min.js"></script>	   
     <script>window.jQuery || document.write('<script src="/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="/js/bootstrap.min.js"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
