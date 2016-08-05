@@ -119,44 +119,49 @@
 
 <form action="/tracing/process?form=updatemessages&id={{pat_id}}" method="post"> 
     <fieldset class="form-group">
+        <div class="col-sm-9">
         <label for="date">Filtrar por fecha</label>
             <input type="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
             <small class="text-muted">
                 Muestra los mensajes que estaban activos en la fecha seleccionada.
             </small>
+        </div>
+        <div class="col-sm-3">
+            <button type="submit" class="btn btn-primary refresh-button" ><span class="glyphicon glyphicon-refresh"></span>
+        </div>
     </fieldset>
-    <input type="submit" class="btn btn-primary" value="Actualizar">
+    
 </form>
-<br>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editingComm" data-action="add" data-patid="{{pat_id}}"> <span class="glyphicon glyphicon-plus"></span> Añadir nuevo </button></td>
+<button type="button" class="btn btn-primary add-new-comm" data-toggle="modal" data-target="#editingComm" data-action="add" data-patid="{{pat_id}}"> <span class="glyphicon glyphicon-plus"></span> Añadir nuevo </button></td>
 
-<br>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thread>
-            <tr>
-                <th> Inicio </th>
-                <th> Final </th>
-                <th> Hora </th>
-                <th> Programado </th>
-                <th> Texto </th>
-                <th> </th>
-            </tr>
-        </thread>
-        <tbody>
-            {{#each comm_list}}
+<div class="panel panel-default chart-container">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thread>
                 <tr>
-                    <td> {{dateStart}}</td>
-                    <td> {{dateEnd}} </td>
-                    <td> {{time}} </td>
-                    <td> {{sched}} </td>
-                    <td> {{text}} </td>
-                    <td> 
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingComm" data-mid="{{msgid}}" data-patid="{{../pat_id}}" data-time="{{time}}" data-dstart="{{raw.dateStart}}" data-dend="{{raw.dateEnd}}" data-sched="{{raw.sched}}" data-text="{{text}}"> <span class="glyphicon glyphicon-edit"></span> </button>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removComm" data-mid="{{msgid}}" data-patid="{{../pat_id}}"> <span class="glyphicon glyphicon-remove"></span></button>
-                    </td>
+                    <th> Inicio </th>
+                    <th> Final </th>
+                    <th> Hora </th>
+                    <th> Programado </th>
+                    <th> Texto </th>
+                    <th> </th>
                 </tr>
-            {{/each}}
-        </tbody>
-    </table>
+            </thread>
+            <tbody>
+                {{#each comm_list}}
+                    <tr>
+                        <td> {{dateStart}}</td>
+                        <td> {{dateEnd}} </td>
+                        <td> {{time}} </td>
+                        <td> {{sched}} </td>
+                        <td> {{text}} </td>
+                        <td> 
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-action="edit" data-target="#editingComm" data-mid="{{msgid}}" data-patid="{{../pat_id}}" data-time="{{time}}" data-dstart="{{raw.dateStart}}" data-dend="{{raw.dateEnd}}" data-sched="{{raw.sched}}" data-text="{{text}}"> <span class="glyphicon glyphicon-edit"></span> </button>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removComm" data-mid="{{msgid}}" data-patid="{{../pat_id}}"> <span class="glyphicon glyphicon-remove"></span></button>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
 </div>

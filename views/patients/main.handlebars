@@ -1,5 +1,8 @@
 {{#section 'jquery'}}
     <script>
+        /*
+            This script fills the information stored when the modal is shown
+        */
          $('#editingPat').on('show.bs.modal', function (event) {
              // modify gender selector
              if({{raw.gender}}){
@@ -32,6 +35,7 @@
     </script>
 {{/section}}
 
+{{!-- The modal for editing patients information --}}
 <div id="editingPat" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -69,7 +73,7 @@
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
-                        <label for="conv" class="col-sm-3 control-label">Vive con</label>
+                        <label for="conv" class="col-sm-3 control-label">Convivencia</label>
                             <div class="col-sm-6">
                                 <select name="conviviality" class="form-control" id="cohab" required>
                                     <option value="0">Solo</option>
@@ -156,8 +160,10 @@
                 <h4 class="modal-title">Eliminar paciente</h4>
             </div>
             <div class="modal-body">
-                ¿Está seguro de que quiere eliminar a este paciente? <br>
+                <p>¿Está seguro de que quiere eliminar a este paciente? <br>
                 Se eliminarán TODOS los datos que se conservan de este paciente, incluyendo recetas, resultados de test y mensajes.
+                </p>
+                <p><strong>Estos datos no se podrán recuperar</strong></p>
             </div>
             <div class="modal-footer">
                 <p class="text-danger"><small>Este cambio no podrá deshacerse</small></p>
@@ -171,24 +177,56 @@
 </div>
 
 <div class="col-sm-6 col-md-8">
-    <p>Nombre completo: {{pat.name}}</p>
-    <p>Fecha de nacimiento: {{pat.birthDate}}</p>
-    <p>Sexo: {{pat.gender}}</p>
-    <p>Correo electrónico: <a href="mailto:{{pat.email}}">{{pat.email}}</a></p>
-    <p>Vive con: {{pat.cohabitation}}</p>
-    <p>Diagnóstico (CIE10): {{pat.diagnosis}}</p>
-    <p>Edad de diagnóstico: {{pat.diagnosisAge}} años</p>
-    <p>Sensible al litio: {{pat.senLit}}</p>
-    <p>Sensible al valproato: {{pat.senVal}}</p>
-    <p>Sensible a la carbamacepina: {{pat.senCar}}</p>
-    <p>Estacionalidad: {{pat.seasonality}}</p>
-    <p>Frecuencia de crisis maníacas: {{pat.maniaCrises}} crisis/año</p>
-    <p>Frecuencia de crisis mixtas: {{pat.mixedCrises}} crisis/año</p>
-    <p>Período libre: {{pat.freePeriod}} meses</p>
-    <p>Síntomas psicóticos: {{pat.senCar}}</p>
-    <p>Otros diagnósticos: {{pat.others}}</p>
+    <h3 class="fieldTitle">Nombre completo</h3>
+    {{pat.name}}
+    
+    <h3 class="fieldTitle">Fecha de nacimiento</h3>
+    {{pat.birthDate}}
+    
+    <h3 class="fieldTitle">Sexo</h3>
+    {{pat.gender}}
+    
+    <h3 class="fieldTitle">Correo electrónico</h3>
+    <a href="mailto:{{pat.email}}">{{pat.email}}</a>
+        
+    <h3 class="fieldTitle">Convivencia</h3>
+    {{pat.cohabitation}}
+        
+    <h3 class="fieldTitle">Diágnostico <small>en formato CIE10</small></h3>
+    {{pat.diagnosis}}
+        
+    <h3 class="fieldTitle">Edad de diagnóstico</h3>
+    {{pat.diagnosisAge}} años
+        
+    <h3 class="fieldTitle">Sensible al lito</h3>
+    {{pat.senLit}}
+    
+    <h3 class="fieldTitle">Sensible al valproato</h3>
+    {{pat.senVal}}   
+    
+    <h3 class="fieldTitle">Sensible a la carbamacepina</h3>
+    {{pat.senCar}}
+    
+    <h3 class="fieldTitle">Estacionalidad</h3>
+    {{pat.seasonality}}
+    
+    <h3 class="fieldTitle">Síntomas psicóticos</h3>
+    {{pat.psycSymp}}
+    
+    <h3 class="fieldTitle">Frecuencia de crisis maníacas</h3>
+    {{pat.maniaCrises}} crisis/año
+    
+    <h3 class="fieldTitle">Fecuencia de crisis mixtas</h3>
+    {{pat.mixedCrises}} crisis/año
+    
+    <h3 class="fieldTitle">Período libre</h3>
+    {{pat.freePeriod}} meses
+    
+    <h3 class="fieldTitle">Otros diágnósticos u observaciones</h3>
+    {{pat.others}}
+    
 </div>
 <div class="col-sm-3 col-md-2">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editingPat"> Editar paciente </button>
-    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletingPat"><span class="glyphicon glyphicon-trash"></span> Eliminar paciente</button>
+    <button style="margin-bottom: 5px; margin-top: 5px; padding-right: 18px; padding-left: 18px;" type="button" class="btn btn-primary" data-toggle="modal" data-target="#editingPat"><span class="glyphicon glyphicon-pencil"></span> Editar paciente </button>
+    <button style="margin-top: 5px; margin-bottom: 5px;" type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletingPat"><span class="glyphicon glyphicon-trash"></span> Eliminar paciente</button>
 </div>

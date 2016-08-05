@@ -1,0 +1,30 @@
+.fieldTitle {
+    border-bottom: 1px solid rgb(238, 238, 238); 
+    margin-top: 15px;
+}
+
+.test-badge{
+    margin-left: 5px; 
+    margin-bottom: 2px;
+}
+
+.panss-test-badge{
+    margin-left: 5px; 
+    margin-bottom: 3px;
+}
+
+.refresh-button{
+    margin-top: 25px; 
+    padding-right: 20px; 
+    padding-left: 20px;
+}
+
+.chart-container{
+    margin-left:16px
+}
+
+.add-new-comm{
+    margin-top: 5px; 
+    margin-bottom: 5px; 
+    margin-left: 16px;
+}
