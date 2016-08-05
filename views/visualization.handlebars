@@ -10,18 +10,25 @@
 
 {{!-- Script to do patient search --}}
 <script type="text/javascript">
+    
+    function showDismissibleAlert(title, message, alertType) {
+        $('#alertContainer').append('<div id="alertDiv" class="alert alert-dismissible fade in ' + alertType + ' role=alert"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+ '<strong>'+ title +'</strong> ' + message +'</span></div>');
+        setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+            $('.alert').alert('close');
+        }, 5000);
+    }
+         
 	 $(document).ready(function(){
-		 $("#search").click(function(){
+         
+         $("#search").on('click', function(){
 			// text in the search field
 			var query = document.getElementById("pac_name").value;
-
                 $.ajax({
                     url: '/tracing/process?form=modalpatientsearch&q='+query,
                     type: 'POST',
                     success: function(data){
                         $('#searchResults').empty();
                         var template = Handlebars.getTemplate('templates/addpatientmodal');
-                        $('#searchResults').empty();
                         if(data.length > 0)
                         {
                             $.each(data, function(i, context){
@@ -32,19 +39,32 @@
                         }
                     },
                     error: function (){
-                        alert("Error. Please refresh the page and try again.");
+                        showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');
+                        loadRecordsDataset(undefined);
                     }
                 });
 		});
-		$('#adddatasets').click(function(){
-			// we only select checkboxes which are checked 8and discard other attributes such as __proto__)
+         // event binding when press Enter key in the modal search field
+         $("#pac_name").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#search").click();
+            }
+        });
+         $('#adddatasets').on('click', function(){
+            // we get the ids of the displayed users
+            var displayedUsers = $('.pat_sel').map(function(){
+                return $(this).attr('data-id');
+            }).get();
+			// we only select checkboxes which are checked and discard other attributes such as __proto__) 
+            // and exclude those already present in #patientsList  
 			var list = $('.dataset_sel:checked').map(function(p, obj){
 				return{
 					name : $(obj).attr('data-name'),
 					id : $(obj).attr('data-id')
 				}
-			}).get();
-			
+			}).get().filter(function(p){
+                return !displayedUsers.includes(p.id);
+            }); 
 			// render results by templating
 			var template = Handlebars.getTemplate('/templates/patientselector');
 			var context = {pat_list : list}
@@ -72,64 +92,55 @@
 		$('#patientsList').on('click', '.pat_sel',function (event) {
 		var chkbox = event.currentTarget;
 		var pat_id = $(chkbox).attr('data-id');
-        var yetDrawed
-		if(chkbox.checked){
-            $.when(requestPrescriptionDataset(pat_id), requestTestDataset(pat_id)).done(function (testDatasetResponse, prescriptionDatasetResponse){
-                if(testDatasetResponse[1] === 'success'){
-                    if(testDatasetResponse[0].length != 0){
-                        loadRecordsDataset(testDatasetResponse[0]);
+        var validDate = ($('#begindate').val() != '' || $('#enddate').val() != '');
+        if(!validDate){
+            showDismissibleAlert('Datos insuficientes', 'Introduzca valores en los campos de fecha', 'alert-danger');
+            $(chkbox).prop('checked', false);
+        }  
+        else {
+            if(chkbox.checked){
+                $.when(requestPrescriptionDataset(pat_id), requestTestDataset(pat_id)).done(function (testDatasetResponse, prescriptionDatasetResponse){
+                    if(testDatasetResponse[1] === 'success'){
+                        if(testDatasetResponse[0].length != 0){
+                            loadRecordsDataset(testDatasetResponse[0]);
+                        }
+                        else{
+                            showDismissibleAlert('Información', 'No se han encontrado resultados de test para el intervalo seleccionado', 'alert-info');
+                            loadRecordsDataset(undefined);
+                        }
+                    } else{
+                        showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');
+                        loadRecordsDataset(undefined);        
                     }
-                    else{
-                        alert('No se han encontrado resultados de test para el intervalo seleccionado.');
-                        loadRecordsDataset(undefined);
+                    if(prescriptionDatasetResponse[1] === 'success'){
+                        if(prescriptionDatasetResponse[0].length != 0){
+                            loadPrescriptionDataset(prescriptionDatasetResponse[0]);
+                        }
+                        else{
+                            showDismissibleAlert('Información', 'No se han encontrado resultados de medicación para el intervalo seleccionado', 'alert-info');
+                            loadPrescriptionDataset(undefined);
+                        }
+                    } else{
+                        showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');
+                        prescriptionDatasetResponse(undefined);        
                     }
-                } else{
-                    alert("Error. Please refresh the page and try again.");
-                    loadRecordsDataset(undefined);        
-                }
-                if(prescriptionDatasetResponse[1] === 'success'){
-                    if(prescriptionDatasetResponse[0].length != 0){
-                        loadPrescriptionDataset(prescriptionDatasetResponse[0]);
-                    }
-                    else{
-                        alert('No se han encontrado resultados de medicación para el intervalo seleccionado.');
-                        loadPrescriptionDataset(undefined);
-                    }
-                } else{
-                    alert("Error. Please refresh the page and try again.");
-                    prescriptionDatasetResponse(undefined);        
-                }
-                drawChart();
-            });
-		}
-		else{
-			// otherwise, the chart should dissapear
-            loadPrescriptionDataset(undefined);
-            loadRecordsDataset(undefined);
-            deleteChart();
-            initChart();
-		}
+                    drawChart();
+                });
+            }
+            else{
+                // otherwise, the chart should dissapear
+                loadPrescriptionDataset(undefined);
+                loadRecordsDataset(undefined);
+                deleteChart();
+                initChart();
+            }
+        }
 	});
 });
 </script>
 
-
-
 {{/section}}
 
-{{!-- Scripts del D3 --}}
-
-<style>
-.chart rect {
-  fill: steelblue;
-}
-
-.chart text {
-  fill: white;
-  font: 10px sans-serif;
-  text-anchor: end;
-}
-</style>
 
 {{!-- Patient search modal --}}
 <div id="addPatient" class="modal fade">
@@ -144,52 +155,59 @@
 					<label for="title" class="col-sm-3 control-label">Búsqueda</label>
 					<div class="col-sm-6">
 						<input type="text" class="form-control" placeholder="Nombre o apellidos del paciente" name="pac_name" id="pac_name">
-						<button id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
 						{{!-- Here we place search results --}}
 						<div id="searchResults">
 							
 						</div>
 					</div>
+                     <div class="col-sm-3">
+                        <button id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                    </div>
                 </fieldset>
             </div>
             <div class="modal-footer">
-                <form method="post">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="adddatasets">Agregar</button>
-                </form>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="adddatasets">Agregar</button>
             </div>
         </div>
     </div>
 </div>
 
 {{!-- We need patient data and dates to draw --}}
-
 <div class="col-sm-3" id="patientsContainter">
-	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPatient"> <span class="glyphicon glyphicon-plus"></span> Añadir nuevo </button>
+    <div>
+        
+        </div>
 	<div>
-		<h4>Listado de pacientes</h4>
-		<div id="patientsList">
-			
-		</div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">Listado de pacientes<button type="button" class="pull-right btn btn-xs btn-default" data-toggle="modal" data-target="#addPatient"> <span class="glyphicon glyphicon-plus"></span></button></div>
+            </div>
+            <div class="panel-body" id="patientsList">
+
+            </div>
+        </div>
 	</div>
 </div>
 
 <div class="col-sm-9" id="chartContainer">
-	<div class="col-sm-5 pull-left">
+    <div id="alertContainer">
+    </div>
+	<div class="col-sm-6 pull-left">
 		<fieldset class="form-group">
 			<label for="begindate">Comienzo</label>
 			<input type="date" class="form-control" id="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
 		</fieldset>
 	</div>
-	<div class="col-sm-5">
+	<div class="col-sm-6">
 		<fieldset class="form-group">
 			<label for="enddate">Final</label>
 			<input type="date" class="form-control" id="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" required>
 		</fieldset>
 	</div>
-	
-	
-
+    <small class="text-muted">
+        Seleccionar el intervalo de fechas de los datos del paciente que se desean mostrar. Aparecerán, por defecto, los datos de prescripciones como de los resultados de los test realizados al paciente. Puede ocultar o mostrar los datos que desee pulsando en su respectivo color en la leyenda. 
+    </small>
 </div>
 
 
