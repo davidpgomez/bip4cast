@@ -70,17 +70,19 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li {{#if dashactive}}class="active"{{/if}}><a href="/index">Dashboard{{#if dashactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
-            <li {{#if aleractive}}class="active"{{/if}}><a href="/alerts">Alertas{{#if aleractive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
-            <li {{#if tracactive}}class="active"{{/if}}><a href="/tracing">Seguimiento{{#if tracactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
             <li {{#if visuactive}}class="active"{{/if}}><a href="/visualization">Visualizacion{{#if visuaactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
             <li {{#if regiactive}}class="active"{{/if}}><a href="/register">Nuevo paciente{{#if regiactive}}<span class="sr-only">(actual)</span>{{/if}}</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li {{#if settactive}}class="active"{{/if}}><a href="/settings">Ajustes</a></li>
             <li {{#if helpactive}}class="active"{{/if}}><a href="/help">Ayuda</a></li>
           </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Búsqueda">
+            <form class="navbar-form navbar-right" action="/tracing/process?form=patientsearch" method="post"> 
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Búsqueda de paciente" name="pac_name" id="pac_id_field">
+                    <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>
+                </div>
           </form>
         </div>
       </div>

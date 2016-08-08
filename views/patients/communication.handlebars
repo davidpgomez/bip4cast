@@ -25,6 +25,8 @@
       }
         else if(act == "add"){
             $(this).find('.modal-title').text('Añadir mensaje');
+            // Clean previous data 
+            $(this).find('.modal-body form').trigger('reset');
             $(this).find('.modal-body form').attr('action', '/tracing/process/?form=addmessage&patid='+patid);
         }
     });
@@ -35,6 +37,18 @@
         var patid = button.data('patid');
         $(this).find('.modal-footer form').attr('action', '/tracing/process/?form=deletemessage&patid='+patid+'&id='+ msgid);
     });
+        
+    $('#refreshForm').submit(function(){
+        var databox = $('#date');
+        if(databox.val().length > 0){
+            return true;
+        }
+        else{
+            showDismissibleAlert('Ooops!', 'La fecha introducida no es correcta o no cumple el formato adecuado', 'alert-danger');
+            return false;
+        }
+    });
+        
     </script>
 {{/section}}
 
@@ -117,18 +131,18 @@
     </div>
 </div>
 
-<form action="/tracing/process?form=updatemessages&id={{pat_id}}" method="post"> 
+<form id="refreshForm" action="/tracing/process?form=updatemessages&id={{pat_id}}" method="post"> 
     <fieldset class="form-group">
-        <div class="col-sm-9">
         <label for="date">Filtrar por fecha</label>
-            <input type="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
-            <small class="text-muted">
-                Muestra los mensajes que estaban activos en la fecha seleccionada.
-            </small>
-        </div>
-        <div class="col-sm-3">
-            <button type="submit" class="btn btn-primary refresh-button" ><span class="glyphicon glyphicon-refresh"></span>
-        </div>
+                <div class="input-group">
+                 <input type="date" id="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                  <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-refresh"></span>   Refrescar </button>
+                  </span>
+                </div>
+                <small class="text-muted">
+                    Muestra los mensajes que estaban activos en la fecha seleccionada
+                </small>
     </fieldset>
     
 </form>

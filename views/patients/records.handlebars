@@ -4,22 +4,38 @@
     $(document).ready(function() {
       $(":input").inputmask();
     });
+    
+    $('#obtainTest').submit(function(){
+        var databox = $('#date');
+        if(databox.val().length > 0){
+            return true;
+        }
+        else{
+            showDismissibleAlert('Ooops!', 'La fecha introducida no es correcta o no cumple el formato adecuado', 'alert-danger');
+            return false;
+        }
+    });
+        
   </script>
+
 {{/section}}
 
-<form action="/tracing/process?form=updaterecords&id={{pat_id}}" method="post"> 
+<form id="obtainTest" action="/tracing/process?form=updaterecords&id={{pat_id}}" method="post"> 
     <fieldset class="form-group">
-        <div class="col-sm-9">
-            <label for="begindate">Fecha</label>
-            <input type="date" class="form-control" id="date" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" data-inputmask="'mask': '99/99/9999'">
-        </div>
-        <div class="col-sm-3">
-            <input style="margin-top: 25px;" type="submit" class="btn btn-primary" value="Obtener informes">
-        </div>
+        <label for="begindate">Fecha</label>
+         <div class="input-group">
+             <input type="date" id="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-search"></span>   Obtener informes </button>
+              </span>
+            </div>
+        <small class="text-muted">
+            Muestra el test que se realizó en la fecha introducida
+        </small>
     </fieldset>
 </form>
 
-<a style="margin-left: 16px;" href="/patient-info/{{pat_id}}/records/newtest" class="btn btn-primary"> <span class="glyphicon glyphicon-plus"></span> Añadir test </a>
+<a href="/patient-info/{{pat_id}}/records/newtest" class="btn btn-primary"> <span class="glyphicon glyphicon-plus"></span> Añadir test </a>
 
 <h2>Resultados de {{record.date}}</h2>
 <div class="btn-group btn-group-justified" role="group">
