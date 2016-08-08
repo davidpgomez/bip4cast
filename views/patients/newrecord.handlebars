@@ -1,83 +1,163 @@
 {{#section 'jquery'}}
     <script>
-        $('.hdrs_question').blur(function () {
-        var sum = 0;
-        $('.hdrs_question').each(function() {
-            sum += Number($(this).val());
-        });
-        $('#hdrs_total').val(sum);
-    });
-    </script>
-    <script>
-        $('.ymrs_question').blur(function () {
-        var sum = 0;
-        $('.ymrs_question').each(function() {
-            sum += Number($(this).val());
-        });
-        $('#ymrs_total').val(sum);
-    });
-    </script>
-    <script>
-        $('.pansspos_question').blur(function () {
-        var sum = 0;
-        $('.pansspos_question').each(function() {
-            sum += Number($(this).val());
-        });
-        $('#pansspos_total').val(sum);
-    });
-    </script>
-    <script>
-        $('.panssneg_question').blur(function () {
-        var sum = 0;
-        $('.panssneg_question').each(function() {
-            sum += Number($(this).val());
-        });
-        $('#panssneg_total').val(sum);
-    });
-    </script>
-    <script>
-        $('.panssgen_question').blur(function () {
-        var sum = 0;
-        $('.panssgen_question').each(function() {
-            sum += Number($(this).val());
-        });
-        $('#panssgen_total').val(sum);
-    });
-    </script>
-    <script>
+        var hdrsTotal = 0;
+        var ymrsTotal = 0;
+        var panssPosTotal = 0;
+        var panssNegTotal = 0;
+        var panssGenTotal = 0;
+        function checkField(event){
+            // select the input field
+            field = this;
+            
+            var min = parseInt($(field).attr('min'));
+            var max = parseInt($(field).attr('max'));
+            var value = parseInt($(field).val());
+            var step = 1;
+            var testType = $(field).attr('data-qtype');
+            
+            if(testType == 'ymrs' && $(field).attr('step') != undefined){
+                step = $(field).attr('step');
+            }
+            
+            if(value >= min && value <= max && value % step == 0){
+                $(field).parent().removeClass('has-error has-warning').addClass('has-success');
+                $(field).popover('destroy');
+                switch(testType){
+                    case 'hdrs': {
+                        hdrsTotal += value;
+                        $('#'+testType+'_total').val(hdrsTotal);
+                        break;
+                    }
+                    case 'ymrs':{
+                        ymrsTotal += value;
+                        $('#'+testType+'_total').val(ymrsTotal);
+                        break;
+                    }
+                    case 'pansspos':{
+                        panssPosTotal += value;
+                        $('#'+testType+'_total').val(panssPosTotal);
+                        break;
+                    }
+                    case 'panssneg':{
+                        panssNegTotal += value;
+                        $('#'+testType+'_total').val(panssNegTotal);
+                        break;
+                    }
+                    case 'panssgen':{
+                        panssGenTotal += value;
+                        $('#'+testType+'_total').val(panssGenTotal);
+                        break;
+                    }
+                }
+            }
+            else{
+                $(field).parent().addClass('has-error');
+                $(field).popover({title: 'Uy!', content : 'El valor introducido no es el adecuado', placement : 'auto', trigger : 'focus'});
+                $(field).popover('show');
+            }
+        }
+        
+        $('.eeag_question').focusout(checkField);
+        $('.hdrs_question').focusout(checkField);
+        $('.ymrs_question').focusout(checkField);
+        $('.pansspos_question').focusout(checkField);
+        $('.panssneg_question').focusout(checkField);
+        $('.panssgen_question').focusout(checkField);
+
         function checkandsave(){
             // check date format
             var databox = $('#date');
             if(databox.val().length > 0){
                 // check if for test with valid data all the fields contain valid info
-                $('#newtestform').submit();
+                var validData = true;
+                if($('#valideeag').prop('checked')){
+                    $('.eeag_question').each(checkField);
+                    // if there is any field with errors
+                    if($('.eeag_question').map(function(i,o) {return $(o).parent().hasClass('has-error');}).get().includes(true)){
+                        validData = false;
+                    }
+                    else{
+                        validData = validData && true;
+                    }
+                }
+                if($('#validhdrs').prop('checked')){
+                    $('.hdrs_question').each(checkField);
+                    // if there is any field with errors
+                    if($('.hdrs_question').map(function(i,o) {return $(o).parent().hasClass('has-error');}).get().includes(true)){
+                        validData = false;
+                    }
+                    else{
+                        validData = validData && true;
+                    }
+                }
+                if($('#validymrs').prop('checked')){
+                    $('.ymrs_question').each(checkField);
+                    // if there is any field with errors
+                    if($('.ymrs_question').map(function(i,o) {return $(o).parent().hasClass('has-error');}).get().includes(true)){
+                        validData = false;
+                    }
+                    else{
+                        validData = validData && true;
+                    }
+                }
+                 if($('#validpansspos').prop('checked')){
+                    $('.pansspos_question').each(checkField);
+                    // if there is any field with errors
+                    if($('.pansspos_question').map(function(i,o) {return $(o).parent().hasClass('has-error');}).get().includes(true)){
+                        validData = false;
+                    }
+                    else{
+                        validData = validData && true;
+                    }
+                } if($('#validpanssneg').prop('checked')){
+                    $('.panssneg_question').each(checkField);
+                    // if there is any field with errors
+                    if($('.panssneg_question').map(function(i,o) {return $(o).parent().hasClass('has-error');}).get().includes(true)){
+                        validData = false;
+                    }
+                    else{
+                        validData = validData && true;
+                    }
+                }
+                 if($('#validpanssgen').prop('checked')){
+                    $('.panssgen_question').each(checkField);
+                    // if there is any field with errors
+                    if($('.panssgen_question').map(function(i,o) {return $(o).parent().hasClass('has-error');}).get().includes(true)){
+                        validData = false;
+                    }
+                    else{
+                        validData = validData && true;
+                    }
+                }
+                if(validData){
+                    $('#newtestform').submit();
+                }
+                else{
+                    showDismissibleAlert('Auch!', 'Alguno de los campos de los test que desea guardar contienen datos incorrectos. Por favor, revíselos detenidamente', 'alert-warning');
+                }
             }
             else{
-                alert('Introduzca una fecha válidad para los test.')
+                showDismissibleAlert('Ooops!', 'La fecha introducida no es correcta o no cumple el formato adecuado', 'alert-danger');
             }
-        
         }
     </script>
 {{/section}}
 
-
 <h2>Nuevo informe</h2>
-<p>Cuando haya finalizado los test, pulse "Guardar cambios" para guardar los cambios. 
-</p>
 {{!-- Fecha del nuevo informe--}}
 <form method="post" action="/tracing/process?form=newrecord&patid={{pat_id}}" id="newtestform">
 <fieldset class="form-group">
     <label for="date">Selección de fecha</label>
     <input type="date" class="form-control" id="date" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
     <small class="text-muted">
-        Seleccione una fecha para los informes
+        Seleccione una fecha para los informes. Cuando haya finalizado los test, pulse "Guardar cambios" para guardar los cambios. 
     </small>
 </fieldset>
 
 <div class="row">
     <div class="btn-group btn-group-justified" role="group">
         <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="#eeag" data-toggle="tab" role="tab" aria-expanded="true">EEAG</a>
             </li>
             <li class="nav-item">
@@ -104,11 +184,11 @@
     </div>
     <div class="tab-content">
             <div id="eeag" class="tab-pane active" role="tabpanel" aria-expanded="true">
-                <div class="col-md-5 col-sm-5">
+                <div class="col-sm-6">
                     <h3>Escala de evaluación de la actividad global</h3>
                     <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente (0-100). Si desea que este test se guarde, marque la casilla de confirmación situada al final del test. </small>
                     <fieldset class="form-group">
-                        <input name="eeag" class="form-control" type="number" min="0" max="100">
+                        <input name="eeag" class="form-control eeag_question" data-qtype="eeag" type="number" min="0" max="100">
                     </fieldset>
                     <fieldset class="form-group">
                         <input type="checkbox" id="valideeag" name="valideeag"> Datos válidos
@@ -117,76 +197,76 @@
                 </div>
             </div>
             <div id="hdrs" class="tab-pane" role="tabpanel" aria-expanded="false">
-                <div class="col-md-5 col-sm-5">
+                <div class="col-sm-6">
                     <h3>Escala para la depresión de Hamilton</h3>
                     <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente  (0-52). Si desea que este test se guarde, marque la casilla de confirmación situada al final del test. </small>
                     <fieldset class="form-group">
                         <label>Humor depresivo <a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_deprMood" data-toggle="tab"></a></label>
-                        <input name="deprMood" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="deprMood"  class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Sentimientos de culpa<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="feelGuilty" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="feelGuilty" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label >Suicidio<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="suic" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="suic"class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Insomnio precoz<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="insoEarly" class="form-control hdrs_question" type="number" min="0" max="2">
+                        <input name="insoEarly" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Insomnio intermedio<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="insoMiddle" class="form-control hdrs_question" type="number" min="0" max="2">
+                        <input name="insoMiddle" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Insomnio tardío<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="insoLate" class="form-control hdrs_question" type="number" min="0" max="2">
+                        <input name="insoLate" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Trabajo y actividades<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="workActiv" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="workActiv" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Inhibición psicomotora<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="retard" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="retard" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Agitación psicomotora<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="agitat" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="agitat" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Ansiedad psíquica<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="anxiPsych" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="anxiPsych" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Ansiedad somática<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="anxiSomat" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="anxiSomat" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Síntomas somáticos gastrointestinales<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="somsymptGastr" class="form-control hdrs_question" type="number" min="0" max="4">
+                        <input name="somsymptGastr" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Síntomas somáticos generales<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="somsymptGener" class="form-control hdrs_question" type="number" min="0" max="2">
+                        <input name="somsymptGener" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Síntomas genitales<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="geniSympt" class="form-control hdrs_question" type="number" min="0" max="2">
+                        <input name="geniSympt" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Hipocondría<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="hypochon" class="form-control hdrs_question" type="number" min="0" max="3">
+                        <input name="hypochon" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="3">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Pérdida de peso<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="lossWeight" class="form-control hdrs_question" type="number" min="0" max="2">
+                        <input name="lossWeight" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Conciencia de enfermedad<a class="nav-link glyphicon glyphicon-info-sign" href="#hdrshelp_feelGuilty" data-toggle="tab"></a></label>
-                        <input name="hdrsinsight" class="form-control hdrs_question" type="number" min="0" max="3">
+                        <input name="hdrsinsight" class="form-control hdrs_question" data-qtype="hdrs" type="number" min="0" max="3">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Resultado total</label>
@@ -229,47 +309,47 @@
                     <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente  (0-60). Si desea que este test se guarde, marque la casilla de confirmación situada al final del test. </small>
                     <fieldset class="form-group">
                         <label>Euforia <a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_elevMood" data-toggle="tab"></a></label>
-                        <input name="elevMood" class="form-control ymrs_question" type="number" min="0" max="4">
+                        <input name="elevMood" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Hiperactividad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="incrActEner" class="form-control ymrs_question" type="number" min="0" max="4">
+                        <input name="incrActEner" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Impulso sexual<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="sexuInters" class="form-control ymrs_question" type="number" min="0" max="4">
+                        <input name="sexuInters" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Sueño<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="sleep" class="form-control ymrs_question" type="number" min="0" max="4">
+                        <input name="sleep" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Irritabilidad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="irritab" class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                        <input name="irritab" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="8" step="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Expresión verbal<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="speech" class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                        <input name="speech" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="8" step="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Trastornos del curso del pensamiento<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="lanThoughDis" class="form-control ymrs_question" type="number" min="0" max="4">
+                        <input name="lanThoughDis" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Trastornos formales del pensamiento<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="content" class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                        <input name="content" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="8" step="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Agresividad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="disAggrBehav" class="form-control ymrs_question" type="number" min="0" max="8" step="2">
+                        <input name="disAggrBehav" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="8" step="2">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Apariencia<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="appearan" class="form-control ymrs_question" type="number" min="0" max="4">
+                        <input name="appearan" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Conciencia de enfermedad<a class="nav-link glyphicon glyphicon-info-sign" href="#ymrshelp_incrActEner" data-toggle="tab"></a></label>
-                        <input name="ymrsinsight" class="form-control ymrs_question" type="number" min="0" max="4">
+                        <input name="ymrsinsight" class="form-control ymrs_question" data-qtype="ymrs" type="number" min="0" max="4">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Resultado total</label>
@@ -311,31 +391,31 @@
                     <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente  (7-49). Si desea que este test se guarde, marque la casilla de confirmación situada al final del test. </small>
                     <fieldset class="form-group">
                         <label>Delirios<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_delsus" data-toggle="tab"></a></label>
-                        <input name="delsus" class="form-control pansspos_question" type="number" min="1" max="7">
+                        <input name="delsus" class="form-control pansspos_question" data-qtype="pansspos" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Desorganización conceptual<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
-                        <input name="concepDisor" class="form-control pansspos_question" type="number" min="1" max="7">
+                        <input name="concepDisor" class="form-control pansspos_question" data-qtype="pansspos" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Conducta alucinatoria<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
-                        <input name="halluBehav" class="form-control pansspos_question" type="number" min="1" max="7">
+                        <input name="halluBehav" class="form-control pansspos_question" data-qtype="pansspos" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Excitación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
-                        <input name="excitem" class="form-control pansspos_question" type="number" min="1" max="7">
+                        <input name="excitem" class="form-control pansspos_question" data-qtype="pansspos" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Grandiosidad<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
-                        <input name="grandios" class="form-control pansspos_question" type="number" min="1" max="7">
+                        <input name="grandios" class="form-control pansspos_question" data-qtype="pansspos" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Suspicacia/perjuicio<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
-                        <input name="suspc" class="form-control pansspos_question" type="number" min="1" max="7">
+                        <input name="suspc" class="form-control pansspos_question" data-qtype="pansspos" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Hostilidad<a class="nav-link glyphicon glyphicon-info-sign" href="#panssposhelp_concepDisor" data-toggle="tab"></a></label>
-                        <input name="hostil" class="form-control pansspos_question" type="number" min="1" max="7">
+                        <input name="hostil" class="form-control pansspos_question" data-qtype="pansspos" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Resultado total</label>
@@ -396,31 +476,31 @@
                     <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente (7-49). Si desea que este test se guarde, marque la casilla de confirmación situada al final del test. </small>
                     <fieldset class="form-group">
                         <label>Embotamiento afectivo<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
-                        <input name="blunAffec" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="blunAffec" class="form-control panssneg_question" data-qtype="panssneg" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Retracción emocional<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_emotWithd" data-toggle="tab"></a></label>
-                        <input name="emotWithd" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="emotWithd" class="form-control panssneg_question" data-qtype="panssneg" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Pobre relación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
-                        <input name="pootRapor" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="pootRapor" class="form-control panssneg_question" data-qtype="panssneg" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Retracción social/apatía pasiva<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
-                        <input name="passSocWithd" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="passSocWithd" class="form-control panssneg_question" data-qtype="panssneg" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Dificultad de pensamiento abstracto<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
-                        <input name="diffAbstThin" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="diffAbstThin" class="form-control panssneg_question" data-qtype="panssneg" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Falta de espontaneidad y fluidez en la conversación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
-                        <input name="lspontConvflow" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="lspontConvflow" class="form-control panssneg_question" data-qtype="panssneg" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Pensamiento estereotipado<a class="nav-link glyphicon glyphicon-info-sign" href="#panssneghelp_blunAffec" data-toggle="tab"></a></label>
-                        <input name="steoThink" class="form-control panssneg_question" type="number" min="1" max="7">
+                        <input name="steoThink" class="form-control panssneg_question" data-qtype="panssneg" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Resultado total</label>
@@ -482,67 +562,67 @@
                     <small class="text-muted">Por favor, valore los siguientes aspectos del estado del paciente (16-112). Si desea que este test se guarde, marque la casilla de confirmación situada al final del test. </small>
                     <fieldset class="form-group">
                         <label>Preocupaciones somáticas<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="somaConcer" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="somaConcer" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Ansiedad<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="anxiet" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="anxiet" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Sentimientos de culpa<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="guiltFeels" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="guiltFeels" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Tensión motora<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="tension" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="tension" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Manierismo y posturas<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="mannPost" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="mannPost" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Depresión<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="depress" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="depress" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Retardo motor<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="motoRetar" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="motoRetar" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Falta de colaboración<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="uncoop" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="uncoop" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Contenidos inusuales del pensamiento<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="unuThough" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="unuThough" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Desorientación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="disorient" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="disorient" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Atención deficiente<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="poorAtten" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="poorAtten" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Ausencia de juicio e introspección<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="ljudInsight" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="ljudInsight" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Trastornos de la volición<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="distVolit" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="distVolit" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Control deficiente de impulsos<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="pinpContr" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="pinpContr" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Preocupación<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="preoc" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="preoc" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Evitación social activa<a class="nav-link glyphicon glyphicon-info-sign" href="#panssgenhelp_somaConcer" data-toggle="tab"></a></label>
-                        <input name="asocAvoid" class="form-control panssgen_question" type="number" min="1" max="7">
+                        <input name="asocAvoid" class="form-control panssgen_question" data-qtype="panssgen" type="number" min="1" max="7">
                     </fieldset>
                     <fieldset class="form-group">
                         <label>Resultado total</label>
@@ -581,12 +661,9 @@
             </div>
         </div>
 </div>
-
-<p>
     <div class="row">
         <div class="col-md-5 col-sm-5">
             <a class="btn btn-primary" onClick="checkandsave()">Guardar datos</a>
         </div>
     </div>
-</p>
 </form>

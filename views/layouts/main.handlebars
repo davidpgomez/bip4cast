@@ -22,6 +22,9 @@
       
     <!-- More styles -->
     <link href="/stylesheets/styles.css" rel="stylesheet">
+      
+    <!-- Some common functions to the site -->
+    <script src="/bip4cast.js" charset="utf-8"></script>
     
 	{{#if visuactive}}
     <!-- D3.js and dimple.js minified -->
@@ -29,8 +32,8 @@
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="http://dimplejs.org/dist/dimple.v2.2.0.min.js"></script>
 	--}}
-	<script src="d3.v3.min.js" charset="utf-8"></script>
-	<script src="dimple.v2.2.0.min.js"></script>
+	<script src="/d3.v3.min.js" charset="utf-8"></script>
+	<script src="/dimple.v2.2.0.min.js"></script>
     {{/if}}
 	 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
@@ -94,19 +97,32 @@
           </ul>
         </div>
         {{/if}}
-        {{#if flash}}
-            <div class="col-sm-offset-3 col-md-offset-2 alert alert-dismissible alert-{{flash.type}}">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;<button> <strong>{{flash.intro}}</strong> {{{flash.message}}}
-           </div>
-           {{/if}}
+
 	{{!-- Espacio de trabajo (cuerpo del dashboard) --}}
            {{#if patientview}}
+            <div class="col-sm-offset-3 col-md-offset-2" >
+                <div id="alertContainer" class="alert-box">
+                    {{#if flash}}
+                        <div class="alert alert-dismissible alert-{{flash.type}} fade in" role="alert">
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> <strong>{{flash.intro}}</strong> 
+                                {{{flash.message}}}
+                        </div>
+                    {{/if}}
+                </div>
+           </div>
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <h1 class="page-header">{{pagetitle}}</h1>
                     {{{body}}}
                 </div>
            {{else}}
-           
+            <div id="alertContainer" class="alert-box">
+                {{#if flash}}
+                    <div class="alert alert-dismissible alert-{{flash.type}} fade in" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> <strong>{{flash.intro}}</strong> 
+                            {{{flash.message}}}
+                    </div>
+                {{/if}}
+            </div> 
           <div class="col-sm-12 col-md-12 main">
             <h1 class="page-header">{{pagetitle}}</h1>
                 {{{body}}}

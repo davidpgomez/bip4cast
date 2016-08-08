@@ -10,14 +10,6 @@
 
 {{!-- Script to do patient search --}}
 <script type="text/javascript">
-    
-    function showDismissibleAlert(title, message, alertType) {
-        $('#alertContainer').append('<div id="alertDiv" class="alert alert-dismissible fade in ' + alertType + ' role=alert"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+ '<strong>'+ title +'</strong> ' + message +'</span></div>');
-        setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
-            $('.alert').alert('close');
-        }, 5000);
-    }
-         
 	 $(document).ready(function(){
          
          $("#search").on('click', function(){
@@ -191,8 +183,6 @@
 </div>
 
 <div class="col-sm-9" id="chartContainer">
-    <div id="alertContainer">
-    </div>
 	<div class="col-sm-6 pull-left">
 		<fieldset class="form-group">
 			<label for="begindate">Comienzo</label>
