@@ -25,7 +25,7 @@
                  $(this).find('.modal-body input#valsens').prop('checked', true);
              }
              if({{raw.season}}){
-                 $(this).find('.modal-body input#station').prop('checked', true);
+                 $(this).find('.modal-body input#season').prop('checked', true);
              }
              if({{raw.psyc}}){
                  $(this).find('.modal-body input#psychs').prop('checked', true);
@@ -43,7 +43,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Editar paciente</h4>
             </div>
-            <form name="edit" class="form-horizontal" role="form"  method="post" id="editPatFrom" action="/tracing/process/form?=editpat?={{pat_id}}">
+            <form name="edit" class="form-horizontal" role="form"  method="post" id="editPatFrom" action="/tracing/process?form=editpatient&patid={{pat_id}}">
                 <div class="modal-body">
                     <fieldset class="form-group">
                         <label for="name" class="col-sm-3 control-label">Nombre completo</label>
@@ -54,7 +54,7 @@
                     <fieldset class="form-group">
                         <label for="birthdate" class="col-sm-3 control-label">Fecha de nacimiento</label>
                         <div class="col-sm-6">
-                            <input type="date" name="bithdate" class="form-control" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" value="{{raw.bday}}">
+                            <input type="date" name="bday" class="form-control" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" value="{{raw.bday}}">
                         </div>
                     </fieldset>
                     <fieldset class="form-group" >
@@ -75,7 +75,7 @@
                     <fieldset class="form-group">
                         <label for="conv" class="col-sm-3 control-label">Convivencia</label>
                             <div class="col-sm-6">
-                                <select name="conviviality" class="form-control" id="cohab" required>
+                                <select name="cohabitation" class="form-control" id="cohab" required>
                                     <option value="0">Solo</option>
                                     <option value="1">Pareja</option>
                                     <option value="2">Pareja e hijos</option>
@@ -94,7 +94,7 @@
                     <fieldset class="form-group">
                         <label for="onset" class="col-sm-3 control-label">Edad inicio de síntomas</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" name="ageOfOnset" id="onset" required value="{{pat.diagnosisAge}}">
+                            <input type="number" class="form-control" name="diagAge" id="onset" required value="{{pat.diagnosisAge}}">
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -110,7 +110,7 @@
                                 <input type="checkbox" name="carsens" id="carsens" value="T"> Sensible a la carbamacepina
                             </label><br>
                             <label>
-                                <input type="checkbox" name="station" id="station" value="T"> Estacionalidad
+                                <input type="checkbox" name="season" id="season" value="T"> Estacionalidad
                             </label>
                             <label>
                                 <input type="checkbox" name="psychs" id="psychs" value="T"> Síntomas psicóticos

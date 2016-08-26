@@ -116,14 +116,6 @@ app.get('/index', function(req, res){
     res.render('index', context);
 });
 
-// patient search form
-app.get('/tracing', function(req, res){
-    var context = {
-    pagetitle : 'Seguimiento',
-    tracactive : true
-}
-    res.render('tracing', context);
-});
 
 // patient sign-up form, form process and unregistration form
 app.get('/register', function(req, res){
@@ -234,16 +226,19 @@ app.post('/tracing/process', function(req, res){
 		console.log('Retrieving possible patients containing: ' + req.body.pac_name);
 		var patientnameregex = new RegExp(req.body.pac_name, 'i');
 		phenotype.find({name : patientnameregex}, function(err, results){
-			if(err) console.error(err);
+			if(err){
+                console.error(err);
+				res.redirect(303, '/index');
+            }
 			console.log('Number of results found: ' + results.length);
 			// create context if there are no results
-			if (results == undefined){
-				var context = {
-				pagetitle : 'Resultados de la búsqueda',
-				tracactive : true,
-				};
-				// mensaje flash con que no hay resultados (u otra cosa similar)
-				res.render('search-results/patient-search', context);
+			if (results == undefined || results.length == 0){
+				req.session.flash = {
+                    type : 'info',
+                    intro : 'Verás, esto es embarazoso...',
+                    message : 'No se encontraron resultados para la búsqueda realizada'
+                };
+				res.redirect(303, '/index');
 			}
 			else{
 				var context = {
@@ -262,6 +257,40 @@ app.post('/tracing/process', function(req, res){
 			}
 		});
 	}
+    else if (form == 'editpatient'){
+        var pat_id = req.query.patid;
+        console.log('Updating patient' + pat_id+ ' info');
+        phenotype.update({_id : pat_id},{
+            email : req.body.email,
+            name : req.body.name,
+            birthDate : tools.toDate(req.body.bday),
+            gender : tools.toBoolean(req.body.gender),
+            cohabitation : parseInt(req.body.cohabitation),
+            diagnosis : req.body.diag,
+            diagnosisAge : req.body.diagAge,
+            senLit : tools.toBoolean(req.body.litsens),
+            senVal : tools.toBoolean(req.body.valsens),
+            senCar : tools.toBoolean(req.body.carsens),
+            seasonality : tools.toBoolean(req.body.season),
+            maniaCrises : parseInt(req.body.mancrisis),
+            mixedCrises : parseInt(req.body.mixcrisis),
+            freePeriod : parseInt(req.body.freeper),
+            psycSymp : tools.toBoolean(req.body.psychs),
+            others : req.body.others,    
+        }, function(err, result){
+            if(err)
+                console.error(err);
+            if(req.xhr)
+                return res.json({success : true});
+            console.log('Patient info updated.');
+            req.session.flash = {
+                type : 'success',
+                intro : 'Patient information updated',
+                message : 'The info has been edited successfully.'
+            };
+            res.redirect(303, '/patient-info/'+pat_id+'/main');
+        });
+    }
     else if (form == 'updateprescriptions'){
         var pat_id = req.query.id;
         console.log('Date: ' + req.body.date);
@@ -367,7 +396,7 @@ app.post('/tracing/process', function(req, res){
                 type : 'success',
                 intro : 'Prescription added.',
                 message : 'The prescription has been added successfully.'
-        };
+            };
         
             res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
         });
@@ -443,13 +472,13 @@ app.post('/tracing/process', function(req, res){
                 res.redirect(500, '/index');
             }
             if(req.xhr) 
-                return res.json({ success: true});
-            console.log('Record added.')
+                return res.json({ success: true });
+            console.log('Record added.');
             req.session.flash = {
                 type : 'success',
                 intro : 'Test added',
-                message : 'The selected test have been added to the DB.'
-        };
+                message : 'The selected test has been added to the DB.'
+            };
         
             res.redirect(303, '/patient-info/'+pat_id+'/records');
         });
@@ -459,6 +488,10 @@ app.post('/tracing/process', function(req, res){
         console.log('Date: ' + req.body.date);
         var date = tools.toDate(req.body.date).toISOString();
         records.findOne({user_id : pat_id, date :  date}, function(err, results){
+            if(results === null){
+                console.log('No results found');
+                return;
+            }
             console.log('Quering patient ' + pat_id + ' tests in ' + date);
             var context = {
                 pagetitle : 'Informes médicos',
@@ -629,6 +662,9 @@ app.post('/tracing/process', function(req, res){
 			res.send(results);
 		});
 	}
+    else{
+        send404(req, res);
+    }
 });
 
 
@@ -638,7 +674,10 @@ app.get('/patient-info/:pat_id/main', function(req, res){
     var pat_id = req.params.pat_id; // obtain pat_id from url
     console.log('Showing information about patient: ' + pat_id);
     phenotype.findOne({ _id : pat_id }, function(err, results){
-        if (err) console.error(err);
+        if(err || results === null){
+            console.log('Patient info not found.');
+            return send404(req, res);
+        }
         console.log('Query completed.'); 
         // create context (map the query results to template)
         var context = {
@@ -877,10 +916,15 @@ rest.post('/test/:pat_id', function(req, content, cb){
 
 // error handlers
 
-// error 404 catch-all handler
-app.use(function(req, res, next) {
+function send404(req, res){
     res.status(404);
     res.render('404', {pagetitle : '404 - Not Found', url : req.url});
+}
+
+
+// error 404 catch-all handler
+app.use(function(req, res, next) {
+    send404(req,res);
 });
 
 // error 500 catch-all handler
