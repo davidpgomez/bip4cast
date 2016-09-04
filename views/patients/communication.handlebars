@@ -39,8 +39,12 @@
     });
         
     $('#refreshForm').submit(function(){
-        var databox = $('#date');
-        if(databox.val().length > 0){
+        // we pick the only date box
+        var begindatefield = $('#begindate')[0];
+        var enddatefield = $('#enddate')[0];
+        var begindatevalid = (begindatefield.value != "" || begindatefield.valueAsDate != null);
+        var enddatevalid = $('#scheduled')[0].checked?(enddatefield.value != "" || enddatefield.valueAsDate != null):true;
+        if(begindatevalid && enddatevalid){
             return true;
         }
         else{
@@ -61,17 +65,17 @@
                 <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <form name="edit" class="form-horizontal" role="form"  method="post" id="editPresFrom">
+                <form name="edit" class="form-horizontal" role="form"  method="post" id="editCommFrom">
                     <fieldset class="form-group">
                         <label for="begindate" class="col-sm-3 control-label">Comienzo</label>
                         <div class="col-sm-6">
-                            <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                            <input type="date" class="form-control date" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" required>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
                         <label for="enddate" class="col-sm-3 control-label">Final</label>
                         <div class="col-sm-6">
-                            <input type="date" class="form-control" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" disabled>
+                            <input type="date" class="form-control date" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" disabled>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -83,7 +87,7 @@
                     <fieldset class="form-group" >
                         <label for="time" class="col-sm-3 control-label">Hora</label>
                         <div class="col-sm-6">
-                            <input type="text" id="time" name="time" class="form-control">
+                            <input type="text" id="time" name="time" class="form-control time">
                         </div>
                     </fieldset>
                     <fieldset class="form-group">

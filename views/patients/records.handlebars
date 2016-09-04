@@ -6,8 +6,8 @@
     });
     
     $('#obtainTest').submit(function(){
-        var databox = $('#date');
-        if(databox.val().length > 0){
+        var datefield = $('#date')[0];
+        if(datefield.value != "" || datefield.valueAsDate != null){
             return true;
         }
         else{

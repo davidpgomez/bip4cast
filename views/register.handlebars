@@ -1,14 +1,3 @@
-{{#section 'jquery'}}
-
-<script>
-    function checkEmail(){
-        $('#')
-    }
-</script>
-
-{{/section}}
-
-
 <form action="/register/process?form=patientregister" method="post"> 
     <fieldset class="form-group">
         <label for="pac_id_form">Nombre completo</label><br>
@@ -23,11 +12,11 @@
     </fieldset>
     <fieldset class="form-group">
         <label for="bday">Fecha nacimiento</label>
-        <input type="date" class="form-control" name="bday" id="bday" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" required>
+        <input type="date" class="form-control date" name="bday" id="bday" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" required>
     </fieldset>
     <fieldset class="form-group">
         <label for="email">Correo electrónico</label>
-        <input typ="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+        <input typ="email" class="form-control email" id="email" name="email" placeholder="name@example.com" required>
     </fieldset>
     <fieldset class="form-group">
         <label for="conv">Convivencia</label>
@@ -41,7 +30,7 @@
     </fieldset>
     <fieldset class="form-group">
         <label for="diag">Diagnóstico</label>
-        <input type="text" class="form-control" name="diag" id="diag" pattern="^[A-Z]\d{2}(\.\d){0,1}$" title="El formato aceptado es A00 o A00.0" required>
+        <input type="text" class="form-control cie" name="diag" id="diag" pattern="^[A-Z]\d{2}(\.\d){0,1}$" title="El formato aceptado es A00 o A00.0" required>
         <small class="text-muted">En formato <a href="https://eciemaps.mspsi.es/ecieMaps/browser/index_10_mc.html">CIE-10</a></small>
     </fieldset>
     <fieldset class="form-group">

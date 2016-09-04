@@ -4,3 +4,12 @@ function showDismissibleAlert(title, message, alertType) {
         $('.alert').alert('close');
     }, 7000);
 }
+
+
+    $(document).ready(function(){
+        // mask for date, email and cie diagnosis fields
+        $('.date').inputmask("date");
+        $('.time').inputmask("hh:mm");
+        $('.email').inputmask("email");
+        $('.cie').inputmask("A99[.9]");
+    });  

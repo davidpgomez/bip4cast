@@ -43,8 +43,9 @@
     });
     
     $('#refreshForm').submit(function(){
-        var databox = $('#date');
-        if(databox.value.length > 0){
+        // we pick the only date box
+        var datefield = $('#date')[0];
+        if(datefield.value != "" || datefield.valueAsDate != null){
             return true;
         }
         else{
@@ -53,8 +54,19 @@
         }
     });
         
-    $(document).ready(function(){
-      $('#date').inputmask("dd/mm/yyyy");  //static mask
+    $('#editPresFrom').submit(function(){
+        // we pick the only date box
+        var begindatefield = $('#begindate')[0];
+        var enddatefield = $('#enddate')[0];
+        var begindatevalid = (begindatefield.value != "" || begindatefield.valueAsDate != null);
+        var enddatevalid = $('#forever')[0].checked?true:(enddatefield.value != "" || enddatefield.valueAsDate != null);
+        if(begindatevalid && enddatevalid){
+            return true;
+        }
+        else{
+            showDismissibleAlert('Ooops!', 'La fecha introducida no es correcta o no cumple el formato adecuado', 'alert-danger');
+            return false;
+        }
     });
         
     </script>
@@ -96,25 +108,25 @@
                     <fieldset class="form-group">
                         <label for="dose" class="col-sm-3 control-label">Dosis</label>
                         <div class="col-sm-6">
-                            <input type="number" id="dose" name="dose" class="form-control">
+                            <input type="number" id="dose" name="dose" class="form-control" required>
                         </div>
                     </fieldset>
                     <fieldset class="form-group" >
                         <label for="time" class="col-sm-3 control-label">Hora</label>
                         <div class="col-sm-6">
-                            <input type="text" id="time" name="time" class="form-control">
+                            <input type="text" id="time" name="time" class="form-control time" required>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
                         <label for="begindate" class="col-sm-3 control-label">Comienzo</label>
                         <div class="col-sm-6">
-                            <input type="date" class="form-control" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                            <input type="date" class="form-control date" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" required>
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
                         <label for="enddate" class="col-sm-3 control-label">Final</label>
                         <div class="col-sm-6">
-                            <input type="date" class="form-control" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                            <input type="date" class="form-control date" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -172,7 +184,7 @@
         <fieldset class="form-group">
             <label for="date">Filtrar por fecha</label>
                 <div class="input-group">
-                 <input type="date" id="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+                 <input type="date" id="date" class="form-control date" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
                   <span class="input-group-btn">
                     <button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-refresh"></span>   Refrescar </button>
                   </span>

@@ -66,8 +66,8 @@
 
         function checkandsave(){
             // check date format
-            var databox = $('#date');
-            if(databox.val().length > 0){
+            var databox = $('#date')[0];
+            if(databox.value != "" || databox.valueAsDate != null){
                 // check if for test with valid data all the fields contain valid info
                 var validData = true;
                 if($('#valideeag').prop('checked')){
