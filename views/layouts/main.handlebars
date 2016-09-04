@@ -22,9 +22,6 @@
       
     <!-- More styles -->
     <link href="/stylesheets/styles.css" rel="stylesheet">
-      
-    <!-- Some common functions to the site -->
-    <script src="/bip4cast.js" charset="utf-8"></script>
     
 	{{#if visuactive}}
     <!-- D3.js and dimple.js minified -->
@@ -138,11 +135,18 @@
     <!-- Placed at the end of the document so the pages  <load faster -->
     {{!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> --}}
 	<script src="jquery.min.js"></script>	   
-    <script>window.jQuery || document.write('<script src="/js/vendor/jquery.min.js"><\/script>')</script>
+    <script>window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')</script>
     <script src="/js/bootstrap.min.js"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <!-- <script src="/js/vendor/holder.min.js"></script> -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+            
+    <!-- inputmask.js -->
+    <script src="/js/jquery.inputmask.bundle.js" charset="utf-8"></script>
+      
+    <!-- Some common functions to the site -->
+    <script src="/js/bip4cast.js" charset="utf-8"></script>
+      
     <script src="/js/ie10-viewport-bug-workaround.js"></script>
     {{{_sections.jquery}}} 
   </body>  
