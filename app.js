@@ -563,17 +563,26 @@ app.post('/tracing/process', function(req, res){
         var pat_id = req.query.patid;
         console.log('Updating message ' + msgid);
         var begindate = tools.toDate(req.body.begindate);
-        var enddate;
+        var enddate, time;
         if(req.body.scheduled == 'on'){
-            enddate = null;
-        }
-        else{
             enddate = tools.toDate(req.body.enddate);
         }
-        comments.update({_id : pres_id}, {
+        else{
+            enddate = null;
+        }
+        if(req.body.sendnow == 'on'){
+            var now = new Date();
+            var currentTime = now.getHours+":"+now.getMinutes;
+            time = tools.toMinutes(currentTime);
+        }
+        else{
+            time = tools.toMinutes(req.body.time)
+        }
+        
+        comments.update({_id : msgid}, {
             dateStart : begindate,
             dateEnd : enddate,
-            time : tools.toMinutes(req.body.time),
+            time : time,
             text : req.body.text,
         }, function(err, result){
             if (err)
@@ -586,7 +595,7 @@ app.post('/tracing/process', function(req, res){
                 intro : 'Message edited',
                 message : 'The message has been edited'
             };
-            res.redirect(303,'/patient-info/'+pat_id+'/prescriptions');
+            res.redirect(303,'/patient-info/'+pat_id+'/communication');
         });
     }
     else if (form == 'deletemessage'){
@@ -678,9 +687,10 @@ app.post('/tracing/process', function(req, res){
 app.get('/patient-info/:pat_id/main', function(req, res){
     var pat_id = req.params.pat_id; // obtain pat_id from url
     console.log('Showing information about patient: ' + pat_id);
-    phenotype.findOne({ _id : pat_id }, function(err, results){
+        phenotype.findOne({ _id : pat_id }, function(err, results){
         if(err || results === null){
-            console.log('Patient info not found.');
+            console.error(err);
+            console.log('Patient '+ pat_id +' info not found.');
             return send404(req, res);
         }
         console.log('Query completed.'); 
@@ -727,45 +737,57 @@ app.get('/patient-info/:pat_id/main', function(req, res){
 
 app.get('/patient-info/:pat_id/prescriptions', function(req, res){
     var pat_id = req.params.pat_id; // obtain pat_id from url
-    comments.find({ user_id : pat_id, prescription : true}, function(err, results){
-        if(err) console.error(err);
-        console.log('Retrieving comments info from patient ' + pat_id);
-        console.log('Number of results found: ' + results.length); 
-        // creating context
-        var context = {
-            pagetitle : 'Recetas',
-            patientview : true,
-            tracactive : true,
-            presactive : true,
-            pat_id : pat_id,
-            comm_list : results.map(function(comments){
-                return {
-                    presid : comments._id,
-                    name : comments.name,
-                    type : comments.type,
-                    dateStart : tools.parseDate(comments.dateStart),
-                    dateEnd : tools.parseDate(comments.dateEnd),
-                    time : tools.parseMinutes(comments.time),
-                    dose : comments.dose,
-                    title : comments.title,
-                    text : comments.text,
-                    raw : {
-                        dateStart : tools.toRawDate(comments.dateStart),
-                        dateEnd : tools.toRawDate(comments.dateEnd),
-                        forever : comments.dateEnd==null?true:false
-                    }
-                }
-            })
-        };
-        res.render('patients/prescriptions', context);
+    phenotype.findOne({ _id : pat_id }, function(err, results){
+        if(err || results === null){
+            console.error(err);
+            console.log('Patient '+ pat_id +' info not found.');
+            return send404(req, res);
+        }
+        else{
+            comments.find({ user_id : pat_id, prescription : true}, function(err, results){
+                if(err) console.error(err);
+                console.log('Retrieving comments info from patient ' + pat_id);
+                console.log('Number of results found: ' + results.length); 
+                // creating context
+                var context = {
+                    pagetitle : 'Recetas',
+                    patientview : true,
+                    tracactive : true,
+                    presactive : true,
+                    pat_id : pat_id,
+                    comm_list : results.map(function(comments){
+                        return {
+                            presid : comments._id,
+                            name : comments.name,
+                            type : comments.type,
+                            dateStart : tools.parseDate(comments.dateStart),
+                            dateEnd : tools.parseDate(comments.dateEnd),
+                            time : tools.parseMinutes(comments.time),
+                            dose : comments.dose,
+                            title : comments.title,
+                            text : comments.text,
+                            raw : {
+                                dateStart : tools.toRawDate(comments.dateStart),
+                                dateEnd : tools.toRawDate(comments.dateEnd),
+                                forever : comments.dateEnd==null?true:false
+                            }
+                        }
+                    })
+                };
+                res.render('patients/prescriptions', context);
+            });
+        }
     });
-    
 });
 
 app.get('/patient-info/:pat_id/records', function(req, res){
     var pat_id = req.params.pat_id;
     records.findOne({user_id : pat_id}, function(err, results){
-        if(err) console.error(err);
+        if(err || results === null){
+            console.error(err);
+            console.log('Patient '+ pat_id +'info not found.');
+            return send404(req, res);
+        }
         console.log('Retrieving last records info from patient: ' + pat_id);
         //creating context and render result
         if(results == null){
@@ -808,47 +830,64 @@ app.get('/patient-info/:pat_id/records', function(req, res){
 });
 
 app.get('/patient-info/:pat_id/records/newtest', function(req, res){
-    var test = req.params.type;
-    var context = {
-        pagetitle : 'Informes médicos',
-        patientview : true,
-        tracactive : true,
-        recoactive : true,
-        pat_id : req.params.pat_id,
-    }
-    res.render('patients/newrecord', context);
+    phenotype.findOne({_id : pat_id}, function(err, results){
+        if(err || results === null){
+            console.error(err);
+            console.log('Patient '+ pat_id +' info not found.');
+            return send404(req, res);
+        }
+        else{
+            var context = {
+                pagetitle : 'Informes médicos',
+                patientview : true,
+                tracactive : true,
+                recoactive : true,
+                pat_id : req.params.pat_id,
+            }
+            res.render('patients/newrecord', context);
+        }
+    });
 });
 
 app.get('/patient-info/:pat_id/communication', function(req, res){
     var pat_id = req.params.pat_id;
-    comments.find({ user_id : pat_id, prescription : false}, function(err, results){
-        if(err) console.error(err);
-        console.log('Retrieving comments info from patient ' + pat_id);
-        console.log('Number of results found: ' + results.length); 
-        // creating context
-        var context = {
-            pagetitle : 'Comunicación',
-            patientview : true,
-            tracactive : true,
-            commactive : true,
-            pat_id : pat_id,
-            comm_list : results.map(function(comments){
-                return {
-                    msgid : comments._id,
-                    dateStart : tools.parseDate(comments.dateStart),
-                    dateEnd : tools.parseDate(comments.dateEnd),
-                    time : tools.parseMinutes(comments.time),
-                    text : comments.text,
-                    sched : tools.parseBoolean(comments.dateEnd==null?true:false),
-                    raw : {
-                        dateStart : tools.toRawDate(comments.dateStart),
-                        dateEnd : tools.toRawDate(comments.dateEnd),
-                        sched : comments.dateEnd==null?false:true
-                    }
-                }
-            })
-        };
-        res.render('patients/communication', context);
+    phenotype.findOne({_id : pat_id}, function(err, results){
+        if(err || results === null){
+            console.error(err);
+            console.log('Patient '+ pat_id +'info not found.');
+            return send404(req, res);
+        }
+        else{
+            comments.find({ user_id : pat_id, prescription : false}, function(err, results){
+                if(err) console.error(err);
+                console.log('Retrieving comments info from patient ' + pat_id);
+                console.log('Number of results found: ' + results.length); 
+                // creating context
+                var context = {
+                    pagetitle : 'Comunicación',
+                    patientview : true,
+                    tracactive : true,
+                    commactive : true,
+                    pat_id : pat_id,
+                    comm_list : results.map(function(comments){
+                        return {
+                            msgid : comments._id,
+                            dateStart : tools.parseDate(comments.dateStart),
+                            dateEnd : tools.parseDate(comments.dateEnd),
+                            time : tools.parseMinutes(comments.time),
+                            text : comments.text,
+                            sched : tools.parseBoolean(comments.dateEnd==null?false:true),
+                            raw : {
+                                dateStart : tools.toRawDate(comments.dateStart),
+                                dateEnd : tools.toRawDate(comments.dateEnd),
+                                sched : comments.dateEnd==null?false:true
+                            }
+                        }
+                    })
+                };
+                res.render('patients/communication', context);
+            });
+        }
     });
 });
 
@@ -946,7 +985,4 @@ app.listen(app.get('port'), function(){
 
 
 // auxiliary objects
-
-
-
 module.exports = app;
