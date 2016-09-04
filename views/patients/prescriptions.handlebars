@@ -44,13 +44,17 @@
     
     $('#refreshForm').submit(function(){
         var databox = $('#date');
-        if(databox.val().length > 0){
+        if(databox.value.length > 0){
             return true;
         }
         else{
             showDismissibleAlert('Ooops!', 'La fecha introducida no es correcta o no cumple el formato adecuado', 'alert-danger');
             return false;
         }
+    });
+        
+    $(document).ready(function(){
+      $('#date').inputmask("dd/mm/yyyy");  //static mask
     });
         
     </script>

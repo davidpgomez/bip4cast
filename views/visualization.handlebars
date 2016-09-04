@@ -20,15 +20,7 @@
                     type: 'POST',
                     success: function(data){
                         $('#searchResults').empty();
-                        var template = Handlebars.getTemplate('templates/addpatientmodal');
-                        if(data.length > 0)
-                        {
-                            $.each(data, function(i, context){
-                                $('#searchResults').append( template(context) );
-                            });
-                        } else {
-                            $('#searchResults').append("No se han encontrado resultados.");
-                        }
+                        $('#searchResults').append(data);
                     },
                     error: function (){
                         showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');

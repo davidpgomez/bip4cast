@@ -659,7 +659,12 @@ app.post('/tracing/process', function(req, res){
 		phenotype.find({name : patientnameregex}, function(err, results){
 			if(err) console.error(err);
 			console.log('Number of results found: ' + results.length);
-			res.send(results);
+			if(results.length > 0){
+                res.render('portions/addpatientmodal', {layout : null, pat_list : results});
+            }
+            else{
+                res.send('No se encontraron resultados para la búsqueda ');
+            }
 		});
 	}
     else{
