@@ -137,16 +137,18 @@
             <div class="modal-body">
                 <fieldset class="form-group">
 					<label for="title" class="col-sm-3 control-label">Búsqueda</label>
-					<div class="col-sm-6">
-						<input type="text" class="form-control" placeholder="Nombre o apellidos del paciente" name="pac_name" id="pac_name">
+					<div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Nombre o apellidos del paciente" name="pac_name" id="pac_name">
+                            <span class="input-group-btn">
+                                <button id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
 						{{!-- Here we place search results --}}
 						<div id="searchResults">
 							
 						</div>
 					</div>
-                     <div class="col-sm-3">
-                        <button id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
-                    </div>
                 </fieldset>
             </div>
             <div class="modal-footer">
