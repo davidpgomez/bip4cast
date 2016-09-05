@@ -1,6 +1,5 @@
 {{!-- Scripting --}}
 
-
 {{#section 'jquery'}}
 {{!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script> --}}
 <script src="handlebars.min.js"></script>
@@ -36,7 +35,7 @@
         });
          $('#adddatasets').on('click', function(){
             // we get the ids of the displayed users
-            var displayedUsers = $('.pat_sel').map(function(){
+            var displayedUsers = $('.distr-sel').map(function(){
                 return $(this).attr('data-id');
             }).get();
 			// we only select checkboxes which are checked and discard other attributes such as __proto__) 
@@ -73,17 +72,21 @@
 				});
         }
 			
-		$('#patientsList').on('click', '.pat_sel',function (event) {
-		var chkbox = event.currentTarget;
-		var pat_id = $(chkbox).attr('data-id');
+    $('#patientsList').on('click', '.distr-sel',function (event) {
+		var button = event.currentTarget;
+		var pat_id = $(button).attr('data-id');
         var validDate = ($('#begindate').val() != '' || $('#enddate').val() != '');
         if(!validDate){
             showDismissibleAlert('Datos insuficientes', 'Introduzca valores en los campos de fecha', 'alert-danger');
-            $(chkbox).prop('checked', false);
         }  
         else {
-            if(chkbox.checked){
-                $.when(requestPrescriptionDataset(pat_id), requestTestDataset(pat_id)).done(function (testDatasetResponse, prescriptionDatasetResponse){
+            // we make dissapear the previous chart
+            loadPrescriptionDataset(undefined);
+            loadRecordsDataset(undefined);
+            deleteChart();
+            initDistributionChart();
+            // we request for data to API
+            $.when(requestPrescriptionDataset(pat_id), requestTestDataset(pat_id)).done(function (testDatasetResponse, prescriptionDatasetResponse){
                     if(testDatasetResponse[1] === 'success'){
                         if(testDatasetResponse[0].length != 0){
                             loadRecordsDataset(testDatasetResponse[0]);
@@ -108,18 +111,84 @@
                         showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');
                         prescriptionDatasetResponse(undefined);        
                     }
-                    drawChart();
+                    drawDistribution();
                 });
-            }
-            else{
-                // otherwise, the chart should dissapear
-                loadPrescriptionDataset(undefined);
-                loadRecordsDataset(undefined);
-                deleteChart();
-                initChart();
-            }
+            
         }
 	});
+    $('#patientsList').on('click', '.histogram-sel',function (event) {
+        var button = event.currentTarget;
+        var pat_id = $(button).attr('data-id');
+        var drug;
+        switch ($(button).attr('data-drug')){
+            case 'lit': drug = 'litio'; break;
+            case 'antiep': drug = 'antiepileptico'; break;
+            case 'antips': drug = 'antipsicotico'; break;
+            case 'ansio': drug = 'ansioliticos/hipnoticos'; break;
+            case 'antid': drug = 'antidepresivos'; break;
+            case 'otros': drug = 'otros'; break;
+        }    
+        var validDate = ($('#begindate').val() != '' || $('#enddate').val() != '');
+        if(!validDate){
+            showDismissibleAlert('Datos insuficientes', 'Introduzca valores en los campos de fecha', 'alert-danger');
+        }
+        else{
+            loadPrescriptionHistogramDataset(undefined, undefined);
+            deleteChart();
+            initHistogramChart();
+            $.when(requestTestDataset(pat_id)).done(function(data, prescriptionDatasetResponse){
+                if(prescriptionDatasetResponse === 'success'){
+                    if(data.length != 0){
+                        // cargar el dataset
+                        loadPrescriptionHistogramDataset(drug, data);
+                    }
+                    else{
+                        showDismissibleAlert('Información', 'No se han encontrado resultados de medicación para el intervalo seleccionado', 'alert-info');
+                        loadPrescriptionHistogramDataset(undefined, undefined);
+                    }
+                } else{
+                    showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');
+                    loadPrescriptionHistogramDataset(undefined, undefined);        
+                }
+                drawHistogram();
+            });
+        }
+    });
+    $('#patientsList').on('click', '.heatmap-sel',function (event) {
+        var button = event.currentTarget;
+        var pat_id = $(button).attr('data-id');
+        var drug;
+        switch ($(button).attr('data-drug')){
+            case 'lit': drug = 'litio'; break;
+            case 'antiep': drug = 'antiepileptico'; break;
+            case 'antips': drug = 'antipsicotico'; break;
+            case 'ansio': drug = 'ansioliticos/hipnoticos'; break;
+            case 'antid': drug = 'antidepresivos'; break;
+            case 'otros': drug = 'otros'; break;
+        }    
+        var validDate = ($('#begindate').val() != '' || $('#enddate').val() != '');
+        if(!validDate){
+            showDismissibleAlert('Datos insuficientes', 'Introduzca valores en los campos de fecha', 'alert-danger');
+        }
+        else{
+            deleteChart();
+            $.when(requestTestDataset(pat_id)).done(function(data, prescriptionDatasetResponse){
+                if(prescriptionDatasetResponse === 'success'){
+                    if(data.length != 0){
+                        // cargar el dataset
+                        drawHeatmap(drug, data);
+                    }
+                    else{
+                        showDismissibleAlert('Información', 'No se han encontrado resultados de medicación para el intervalo seleccionado', 'alert-info');
+                    }
+                }
+                else{
+                    showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');
+                }
+            });
+            
+        }
+    });
 });
 </script>
 
@@ -160,7 +229,7 @@
 </div>
 
 {{!-- We need patient data and dates to draw --}}
-<div class="col-sm-3" id="patientsContainter">
+<div class="col-sm-4" id="patientsContainter">
     <div>
         
         </div>
@@ -176,7 +245,7 @@
 	</div>
 </div>
 
-<div class="col-sm-9" id="chartContainer">
+<div class="col-sm-8" id="chartContainer">
 	<div class="col-sm-6 pull-left">
 		<fieldset class="form-group">
 			<label for="begindate">Comienzo</label>
