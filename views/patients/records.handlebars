@@ -1,8 +1,33 @@
 {{#section 'jquery'}}
 <script src="/js/inputmask.js"></script>
 <script>
-    $(document).ready(function() {
-      $(":input").inputmask();
+    $(document).ready(function(){
+         
+         $("#searchTest").on('click', function(){
+			// text in the search field
+			var begindatefield = document.getElementById("begindate");
+            var enddatefield = document.getElementById("enddate");
+            var begindatevalid = (begindatefield.value != "" || begindatefield.valueAsDate != null);
+            var enddatevalid = (enddatefield.value != "" || enddatefield.valueAsDate != null);
+            if(begindatevalid && enddatevalid){
+                $.ajax({
+                    url: '/tracing/process?form=modaltestsearch',
+                    contentType: 'application/json',
+                    data : JSON.stringify({begindate : begindatefield.value, enddate : enddatefield.value, pat_id : '{{pat_id}}' }),
+                    type: 'POST',
+                    success: function(data){
+                        $('#searchResults').empty();
+                        $('#searchResults').append(data);
+                    },
+                    error: function (){
+                        showDismissibleAlert('Ooops!', 'Error en la comunicación con el servidor. Por favor, refresque la página y vuelva a intentarlo', 'alert-danger');
+                    }
+                });
+            }
+            else{
+                showDismissibleAlert('Ooops!', 'La fecha introducida no es correcta o no cumple el formato adecuado', 'alert-danger');      
+            }
+		});
     });
     
     $('#obtainTest').submit(function(){
@@ -20,11 +45,40 @@
 
 {{/section}}
 
+<div id="searchTestModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Buscar test</h4>
+            </div>
+            <div class="modal-body">
+                <fieldset class="form-group">
+                    <div class="col-sm-5">
+                        <input type="date" class="form-control date" id="begindate" name="begindate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" placeholder = "Fecha de inicio" required>
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="date" class="form-control date" id="enddate" name="enddate" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA" placeholder="Fecha final" required>
+                    </div>
+                    {{!-- Here we place search results --}}
+                    <div id="searchResults">
+
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="searchTest">Buscar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form id="obtainTest" action="/tracing/process?form=updaterecords&id={{pat_id}}" method="post"> 
     <fieldset class="form-group">
         <label for="begindate">Fecha</label>
          <div class="input-group">
-             <input type="date" id="date" class="form-control" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
+             <input type="date" id="date" class="form-control date" name="date" pattern="((0)[1-9]|[12][0-9]|3[01])[- /.]((0)[1-9]|1[012])[- /.](19|20)\d\d" title="El formato aceptado es DD/MM/AAAA">
               <span class="input-group-btn">
                 <button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-search"></span>   Obtener informes </button>
               </span>
@@ -36,6 +90,8 @@
 </form>
 
 <a href="/patient-info/{{pat_id}}/records/newtest" class="btn btn-primary"> <span class="glyphicon glyphicon-plus"></span> Añadir test </a>
+
+<a class="btn btn-primary" data-toggle="modal" data-target="#searchTestModal"> <span class="glyphicon glyphicon-calendar"></span> Buscar test por intervalo </a>
 
 <h2>Resultados de {{record.date}}</h2>
 <div class="btn-group btn-group-justified" role="group">

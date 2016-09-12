@@ -1,0 +1,11 @@
+<ul>
+    {{#each test}}
+        <li>Fecha: {{date}}
+            <ul>
+                {{#each tests}}
+                <li>{{name}}, puntuación: {{punt}}</li>
+                {{/each}}
+            </ul>
+        </li>
+    {{/each}}
+</ul>

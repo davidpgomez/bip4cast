@@ -32,3 +32,14 @@
 .alert-box {
     margin:15px;
 }
+
+
+rect.bordered {
+    stroke: #E6E6E6;
+    stroke-width:2px;   
+}
+
+text.mono {
+    font-size: 9pt;
+}
+

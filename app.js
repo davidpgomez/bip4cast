@@ -244,6 +244,7 @@ app.post('/tracing/process', function(req, res){
 				var context = {
 				pagetitle : 'Resultados de la búsqueda',
 				tracactive : true,
+                searchquery : req.body.pac_name,
 				pac_list : results.map(function(phenotype){ 
 				return {
 					pac_id : phenotype._id, 
@@ -285,8 +286,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Patient info updated.');
             req.session.flash = {
                 type : 'success',
-                intro : 'Patient information updated',
-                message : 'The info has been edited successfully.'
+                intro : '¡Éxito!',
+                message : 'La información se ha actualizado correctamente.'
             };
             res.redirect(303, '/patient-info/'+pat_id+'/main');
         });
@@ -356,8 +357,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Prescription edited.');
             req.session.flash = {
                 type : 'success',
-                intro : 'Prescription edited.',
-                message : 'The prescription has been edited successfully.'
+                intro : '¡Éxito!',
+                message : 'La receta se ha editado correctamente.'
             };
             res.redirect(303,'/patient-info/'+pat_id+'/prescriptions');
         });
@@ -394,8 +395,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Prescription added.')
             req.session.flash = {
                 type : 'success',
-                intro : 'Prescription added.',
-                message : 'The prescription has been added successfully.'
+                intro : '¡Éxito!',
+                message : 'La receta se ha añadido correctamente.'
             };
         
             res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
@@ -405,15 +406,15 @@ app.post('/tracing/process', function(req, res){
         var pat_id = req.query.patid;
         var pres_id = req.query.id;
         console.log('Deleting prescription.');
-        comments.remove({_id : pes_id}, function(err){
+        comments.remove({_id : pres_id}, function(err){
             if(err)
                 console.error(err);
             if(req.xhr) 
                 return res.json({ success : true });
             req.session.flash = {
                 type : 'success',
-                intro : 'Receta eliminada',
-                message : 'Se ha eliminado la receta a la base de datos'
+                intro : '¡Éxito!',
+                message : 'La receta se ha eliminado correctamente.'
         };
             res.redirect(303, '/patient-info/'+pat_id+'/prescriptions');
         });       
@@ -476,8 +477,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Record added.');
             req.session.flash = {
                 type : 'success',
-                intro : 'Test added',
-                message : 'The selected test has been added to the DB.'
+                intro : '¡Éxito!',
+                message : 'El test seleccionado se ha añadido correctamente.'
             };
         
             res.redirect(303, '/patient-info/'+pat_id+'/records');
@@ -552,8 +553,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Message added.')
             req.session.flash = {
                 type : 'success',
-                intro : 'Message added',
-                message : 'The message has been added to the DB'
+                intro : '¡Éxito!',
+                message : 'El mensaje se ha añadido correctamente.'
             };
             res.redirect(303, '/patient-info/'+pat_id+'/communication');
         });
@@ -592,8 +593,8 @@ app.post('/tracing/process', function(req, res){
             console.log('Message edited.');
             req.session.flash = {
                 type : 'success',
-                intro : 'Message edited',
-                message : 'The message has been edited'
+                intro : '¡Éxito!',
+                message : 'El mensaje se ha editado correctamente.'
             };
             res.redirect(303,'/patient-info/'+pat_id+'/communication');
         });
@@ -609,8 +610,8 @@ app.post('/tracing/process', function(req, res){
                 return res.json({ success : true });
             req.session.flash = {
                 type : 'success',
-                intro : 'Message deleted',
-                message : 'The message has been deleted from the DB'
+                intro : '¡Éxito!',
+                message : 'El mensaje se ha eliminado correctamente.'
         };
             res.redirect(303, '/patient-info/'+pat_id+'/communication');
         }); 
@@ -672,9 +673,57 @@ app.post('/tracing/process', function(req, res){
                 res.render('portions/addpatientmodal', {layout : null, pat_list : results});
             }
             else{
-                res.send('No se encontraron resultados para la búsqueda ');
+                res.send('No se encontraron resultados para la búsqueda.');
             }
 		});
+	}
+    else if (form == 'modaltestsearch'){
+        var begindate = tools.toDate(req.body.begindate);
+        var enddate = tools.toDate(req.body.enddate);
+        var pat_id = req.body.pat_id;
+        console.log('Retrieving test info from patient '+ pat_id + ' between ' + begindate + ' and ' + enddate);
+		records.find({user_id : pat_id, date : {$gte : begindate}, date : {$lte : enddate}}, function(err, results){
+			if(err) console.error(err);
+			console.log('Number of results found: ' + results.length);
+			if(results.length > 0){
+                var context = {
+                    layout : null,
+                    test : results.map(function(t){
+                      return{  
+                          date : tools.parseDate(t.date),
+                          tests : function(){
+                              var r = [];
+                              if(t.eeag != null){
+                                  r.push({name : 'EEAG', punt : t.eeag});
+                              }
+                              if(t.hdrs != null){
+                                  r.push({name : 'HDRS', punt : tools.parseRecord(t.hdrs)});
+                              }
+                              if(t.ymrs != null){
+                                  r.push({name : 'YMRS', punt : tools.parseRecord(t.ymrs)});
+                              }
+                              if(t.panss.panss_gen != null){
+                                  r.push({name : 'PANSS general', punt : tools.parseRecord(t.panss.panss_gen )});
+                              }
+                              if(t.panss.panss_pos != null){
+                                  r.push({name : 'PANSS positiva', punt : tools.parseRecord(t.panss.panss_pos )});
+                              }
+                              if(t.panss.panss_neg != null){
+                                  r.push({name : 'PANSS negativa', punt : tools.parseRecord(t.panss.panss_neg)});
+                              }
+                              
+                              return r;
+                          }
+                        }  
+                    }),
+                }
+                res.render('portions/searchtest', context);
+            }
+            else{
+                res.send('No se encontraron resultados para la búsqueda.');
+            }
+		});
+        
 	}
     else{
         send404(req, res);
@@ -775,61 +824,66 @@ app.get('/patient-info/:pat_id/prescriptions', function(req, res){
                     })
                 };
                 res.render('patients/prescriptions', context);
-            });
+            }).limit(15).sort({"date":-1});
         }
     });
 });
 
 app.get('/patient-info/:pat_id/records', function(req, res){
-    var pat_id = req.params.pat_id;
-    records.findOne({user_id : pat_id}, function(err, results){
-        if(err || results === null){
+    var pat_id = req.params.pat_id; // obtain pat_id from url
+    phenotype.find({ _id : pat_id }, function(err, result){
+        if(err || result === null){
             console.error(err);
-            console.log('Patient '+ pat_id +'info not found.');
+            console.log('Patient '+ pat_id +' info not found.');
             return send404(req, res);
         }
-        console.log('Retrieving last records info from patient: ' + pat_id);
-        //creating context and render result
-        if(results == null){
-            console.log('No results found.');
-            var context = {
-                pagetitle : 'Informes médicos',
-                patientview : true,
-                tracactive : true,
-                recoactive : true,
-                pat_id : pat_id,
-            };
-            res.render('patients/records', context);    
-        }
-        else {
-            var context = {
-                pagetitle : 'Informes médicos',
-                patientview : true,
-                tracactive : true,
-                recoactive : true,
-                pat_id : pat_id,
-                record : {
-                    date : tools.parseDate(results.date),
-                    eeag : results.eeag,
-                    hdrs : results.hdrs,
-                    hdrs_total : tools.parseRecord(results.hdrs, 'hdrs'),
-                    ymrs : results.ymrs,
-                    ymrs_total : tools.parseRecord(results.ymrs, 'ymrs'),
-                    panss_gen : results.panss.panss_gen,
-                    panss_gen_total : tools.parseRecord(results.panss.panss_gen, 'panss_gen'),
-                    panss_neg : results.panss.panss_neg,
-                    panss_neg_total : tools.parseRecord(results.panss.panss_neg, 'panss_neg'),
-                    panss_pos : results.panss.panss_pos,
-                    panss_pos_total : tools.parseRecord(results.panss.panss_pos, 'panss_pos'),
-                    panss_total : this.panss_gen_total + this.panss_pos_total + this.panss_neg_total
+        else{
+            records.findOne({user_id : pat_id}, function(err, results){
+                console.log('Retrieving last records info from patient: ' + pat_id);
+                //creating context and render result
+                if(results == null){
+                    console.log('No results found.');
+                    var context = {
+                        pagetitle : 'Informes médicos',
+                        patientview : true,
+                        tracactive : true,
+                        recoactive : true,
+                        pat_id : pat_id,
+                    };
+                    res.render('patients/records', context);    
                 }
-            };
-            res.render('patients/records', context);
+                else {
+                    var context = {
+                        pagetitle : 'Informes médicos',
+                        patientview : true,
+                        tracactive : true,
+                        recoactive : true,
+                        pat_id : pat_id,
+                        record : {
+                            date : tools.parseDate(results.date),
+                            eeag : results.eeag,
+                            hdrs : results.hdrs,
+                            hdrs_total : tools.parseRecord(results.hdrs, 'hdrs'),
+                            ymrs : results.ymrs,
+                            ymrs_total : tools.parseRecord(results.ymrs, 'ymrs'),
+                            panss_gen : results.panss.panss_gen,
+                            panss_gen_total : tools.parseRecord(results.panss.panss_gen, 'panss_gen'),
+                            panss_neg : results.panss.panss_neg,
+                            panss_neg_total : tools.parseRecord(results.panss.panss_neg, 'panss_neg'),
+                            panss_pos : results.panss.panss_pos,
+                            panss_pos_total : tools.parseRecord(results.panss.panss_pos, 'panss_pos'),
+                            panss_total : this.panss_gen_total + this.panss_pos_total + this.panss_neg_total
+                        }
+                    };
+                    res.render('patients/records', context);
+                }
+            }).limit(1).sort({"date":-1});
         }
-    });
+    })
 });
 
 app.get('/patient-info/:pat_id/records/newtest', function(req, res){
+    var pat_id = req.params.pat_id; // obtain pat_id from url
     phenotype.findOne({_id : pat_id}, function(err, results){
         if(err || results === null){
             console.error(err);
@@ -886,7 +940,7 @@ app.get('/patient-info/:pat_id/communication', function(req, res){
                     })
                 };
                 res.render('patients/communication', context);
-            });
+            }).limit(15).sort({"date":-1});;
         }
     });
 });
