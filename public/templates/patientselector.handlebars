@@ -1,7 +1,39 @@
 <div>
 {{#each pat_list}}
     <div>
-        <input style="margin : 6px" type="checkbox" class="pat_sel" data-id="{{id}}"><label> {{name}} </label>
-    </div>
+        <label> {{name}} </label>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default distr-sel" data-id="{{id}}">Distribución</button>
+         <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Histograma
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="histogram-sel" data-drug="lit" data-id="{{id}}">Litio</a></li>
+                <li><a class="histogram-sel" data-drug="antiep" data-id="{{id}}">Antiepiléptico</a></li>
+                <li><a class="histogram-sel" data-drug="antips" data-id="{{id}}">Antipsicótico</a></li>
+                <li><a class="histogram-sel" data-drug="ansio" data-id="{{id}}">Ansiolítios/hipnóticos</a></li>
+                <li><a class="histogram-sel" data-drug="antid" data-id="{{id}}">Antidepresivos</a></li>
+                <li><a class="histogram-sel" data-drug="otros" data-id="{{id}}">Otros</a></li>
+            </ul>
+          </div>
+
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Heatmap
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="heatmap-sel" data-drug="lit" data-id="{{id}}">Litio</a></li>
+                <li><a class="heatmap-sel" data-drug="antiep" data-id="{{id}}">Antiepiléptico</a></li>
+                <li><a class="heatmap-sel" data-drug="antips" data-id="{{id}}">Antipsicótico</a></li>
+                <li><a class="heatmap-sel" data-drug="ansio" data-id="{{id}}">Ansiolítios/hipnóticos</a></li>
+                <li><a class="heatmap-sel" data-drug="antid" data-id="{{id}}">Antidepresivos</a></li>
+                <li><a class="heatmap-sel" data-drug="otros" data-id="{{id}}">Otros</a></li>
+            </ul>
+          </div>
+        </div>
+        </div>
 {{/each}}
 </div>
