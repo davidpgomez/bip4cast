@@ -116,6 +116,15 @@ app.get('/index', function(req, res){
     res.render('index', context);
 });
 
+// show help view
+app.get('/help', function(req, res){
+    var context = {
+        pagetitle : 'Ayuda',
+        helpactive : true
+    }
+    res.render('help', context);
+});
+
 
 // patient sign-up form, form process and unregistration form
 app.get('/register', function(req, res){
